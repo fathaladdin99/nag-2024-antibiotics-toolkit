@@ -1,0 +1,74 @@
+[
+  {
+    "code": "C1",
+    "title": "C1: Acute Bronchitis and Pneumonia",
+    "filename": "C1_flowchart.jpg",
+    "embedUrl": "https://drive.google.com/file/d/1wD4vGeDK7ZYxFcAbfTDWHh_5yzeVLLcn/preview",
+    "nagUrl": "https://sites.google.com/moh.gov.my/nag/contents/section-c-clinical-pathways-in-primary-care/c1-acute-bronchitis-and-pneumonia?authuser=0",
+    "summary": "Primary care diagnostic algorithm & empiric therapy for acute cough, bronchitis, and CAP in adults and children."
+  },
+  {
+    "code": "C2",
+    "title": "C2: Acute Otitis Media",
+    "filename": "C2_flowchart.jpg",
+    "embedUrl": "https://drive.google.com/file/d/1zBEHgP-8SOvaN_a8RPlkBHQCWkydkW3d/preview",
+    "nagUrl": "https://sites.google.com/moh.gov.my/nag/contents/section-c-clinical-pathways-in-primary-care/c2-acute-otitis-media?authuser=0",
+    "summary": "Watchful waiting protocol vs immediate antibiotic criteria (Amoxicillin high dose vs Augmentin) for AOM."
+  },
+  {
+    "code": "C3",
+    "title": "C3: Acute Pharyngitis",
+    "filename": "C3_flowchart.jpg",
+    "embedUrl": "https://drive.google.com/file/d/1uGy5f2QkESC7qVUCp6tH9_HR2bbDx8ck/preview",
+    "nagUrl": "https://sites.google.com/moh.gov.my/nag/contents/section-c-clinical-pathways-in-primary-care/c3-acute-pharyngitis?authuser=0",
+    "summary": "Modified Centor / McIsaac scoring flowchart, distinguishing viral pharyngitis from Group A Streptococcus."
+  },
+  {
+    "code": "C4",
+    "title": "C4: Acute Rhinosinusitis",
+    "filename": "C4_flowchart.jpg",
+    "embedUrl": "https://drive.google.com/file/d/1-ZWDXr-lCCn9raDqfmg3HpUWDCRjQFQ6/preview",
+    "nagUrl": "https://sites.google.com/moh.gov.my/nag/contents/section-c-clinical-pathways-in-primary-care/c4-acute-rhinosinusitis?authuser=0",
+    "summary": "Viral URTI vs Acute Bacterial Rhinosinusitis (ABRS - double sickening, persistent >10 days, severe onset)."
+  },
+  {
+    "code": "C5",
+    "title": "C5: Acute Gastroenteritis",
+    "filename": "C5_flowchart.jpg",
+    "embedUrl": "https://drive.google.com/file/d/13hJDWa6-xG2hKSpJoqHshJtoUhEkq3SI/preview",
+    "nagUrl": "https://sites.google.com/moh.gov.my/nag/contents/section-c-clinical-pathways-in-primary-care/c5-acute-gastroenteritis?authuser=0",
+    "summary": "Hydration-first approach, red flags, and criteria for empiric Azithromycin / Ciprofloxacin."
+  },
+  {
+    "code": "C6",
+    "title": "C6: Skin and Soft Tissue Infection",
+    "filename": "C6_flowchart.jpg",
+    "embedUrl": "https://drive.google.com/file/d/1iUe7Bn__TY3lrP1L3xuiuAK9MQh9KBQe/preview",
+    "nagUrl": "https://sites.google.com/moh.gov.my/nag/contents/section-c-clinical-pathways-in-primary-care/c6-skin-and-soft-tissue-infection?authuser=0",
+    "summary": "Purulent (abscess, carbuncle) vs Non-purulent (cellulitis, erysipelas, impetigo) decision tree and incision drainage."
+  },
+  {
+    "code": "C7",
+    "title": "C7: Urinary Tract Infection in Non-Pregnancy",
+    "filename": "C7_flowchart.jpg",
+    "embedUrl": "https://drive.google.com/file/d/1UDZcoSzxBgjM-9FDgcEbnV6841yzxOwy/preview",
+    "nagUrl": "https://sites.google.com/moh.gov.my/nag/contents/section-c-clinical-pathways-in-primary-care/c7-urinary-tract-infection-in-non-pregnancy?authuser=0",
+    "summary": "Uncomplicated cystitis vs pyelonephritis algorithm; first-line Nitrofurantoin / Fosfomycin / Cefuroxime."
+  },
+  {
+    "code": "C8",
+    "title": "C8: Urinary Tract Infection in Pregnancy (Asymptomatic Bacteriuria)",
+    "filename": "C8_flowchart.jpg",
+    "embedUrl": "https://drive.google.com/file/d/1-W60YOHBNYiP8fusR3R-PkwcxvqUwC0C/preview",
+    "nagUrl": "https://sites.google.com/moh.gov.my/nag/contents/section-c-clinical-pathways-in-primary-care/c8-urinary-tract-infection-in-pregnancy-asymptomatic-bacteriuria?authuser=0",
+    "summary": "Screening urine culture at antenatal booking, safe antimicrobials by trimester, repeat test of cure."
+  },
+  {
+    "code": "C9",
+    "title": "C9: Urinary Tract Infection in Pregnancy (Symptomatic)",
+    "filename": "C9_flowchart.jpg",
+    "embedUrl": "https://drive.google.com/file/d/11Ew6KXAhdBIRdiBV3nUehdOqaWZi9_OZ/preview",
+    "nagUrl": "https://sites.google.com/moh.gov.my/nag/contents/section-c-clinical-pathways-in-primary-care/c9-urinary-tract-infection-in-pregnancy-symptomatic?authuser=0",
+    "summary": "Symptomatic lower UTI vs acute pyelonephritis in pregnant women; admission criteria and maternal-fetal safety."
+  }
+]
