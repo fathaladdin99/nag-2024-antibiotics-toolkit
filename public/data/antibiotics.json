@@ -689,5 +689,80 @@
     "maxSingleDoseAdult": "1000-1500 mg/dose",
     "renalAdjustment": "Mandatory TDM and interval adjustment based on CrCl / AUC:MIC / trough level.",
     "safetyWarnings": "MANDATORY TDM. Red Man Syndrome with rapid infusion: infuse each 500mg over at least 60 minutes. Monitor renal function and trough level before 4th dose. Trough target: 10-15 mcg/mL (routine), 15-20 mcg/mL (severe/CNS/MRSA pneumonia)."
+  },
+  {
+    "id": "benzathine_penicillin",
+    "name": "Benzathine Penicillin G (BPG)",
+    "class": "Natural Penicillin (Long-Acting Depot)",
+    "aware": "Access",
+    "routes": [
+      "IM"
+    ],
+    "formulations": [
+      {
+        "name": "Benzathine Penicillin G 1.2 Mega Units (1,200,000 units) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Benzathine Penicillin G 2.4 Mega Units (2,400,000 units) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "2.4 Mega units",
+    "maxSingleDoseAdult": "1.2 - 2.4 Mega units/dose",
+    "renalAdjustment": "No specific adjustment for monthly depot prophylaxis.",
+    "safetyWarnings": "FOR INTRAMUSCULAR (IM) INJECTION ONLY! Fatal if injected intravenously (cardiac arrest / microembolization). Deep IM injection in gluteus or anterolateral thigh."
+  },
+  {
+    "id": "cefepime",
+    "name": "Cefepime (Maxipime)",
+    "class": "Fourth-generation Cephalosporin (Anti-pseudomonal)",
+    "aware": "Watch",
+    "routes": [
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Cefepime 1000 mg (1 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Cefepime 2000 mg (2 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "6000 mg/day (6 g/day)",
+    "maxSingleDoseAdult": "2000 mg/dose",
+    "renalAdjustment": "CrCl 30-50 mL/min: q12h; CrCl 11-29 mL/min: 50% dose q24h; CrCl < 10 mL/min: 500mg q24h.",
+    "safetyWarnings": "First-line monotherapy for paediatric febrile neutropenia. Neurotoxicity risk (encephalopathy, myoclonus, seizures) if unadjusted in renal impairment."
+  },
+  {
+    "id": "piperacillin_tazobactam",
+    "name": "Piperacillin / Tazobactam (Tazocin)",
+    "class": "Extended-spectrum Penicillin + Beta-lactamase inhibitor",
+    "aware": "Watch",
+    "routes": [
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Piperacillin/Tazobactam 2.25 g Vial (Pip 2g + Tazo 0.25g)",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Piperacillin/Tazobactam 4.5 g Vial (Pip 4g + Tazo 0.5g)",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "16000 mg piperacillin/day (16 g/day)",
+    "maxSingleDoseAdult": "4500 mg/dose",
+    "renalAdjustment": "CrCl 20-50 mL/min: 2.25g q6h or 3.375g q8h; CrCl < 20 mL/min: 2.25g q8h.",
+    "safetyWarnings": "Doses specified by piperacillin component. Extended infusion over 3-4 hours improves pharmacodynamic target attainment. Synergistic nephrotoxicity when combined with vancomycin."
   }
 ]

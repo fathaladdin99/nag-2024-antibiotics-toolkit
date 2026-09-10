@@ -1,0 +1,2048 @@
+const fs = require('fs');
+const path = require('path');
+
+const conditions = [
+  // =========================================================================
+  // 1. OTORHINOLARYNGOLOGY (ENT) & PRIMARY CARE (B9, C2, C3, C4)
+  // =========================================================================
+  {
+    id: "acute_tonsillopharyngitis",
+    name: "Acute Tonsillitis / Pharyngitis (GAS / Sore Throat)",
+    category: "ENT / Primary Care",
+    ageSuitability: "≥ 3 years to 18 years",
+    commonOrganisms: "Streptococcus pyogenes (Group A Streptococcus - GAS)",
+    comments: "Routine antibiotic treatment is NOT indicated for viral pharyngitis (majority). For proven or high-suspicion GAS (Centor/McIsaac score ≥3), complete a full 10-day course of penicillin or amoxicillin to prevent Acute Rheumatic Fever (ARF) and suppurative complications.",
+    antibiotics: [
+      {
+        antibioticId: "phenoxymethylpenicillin",
+        type: "first_line",
+        label: "Penicillin V (Phenoxymethylpenicillin) PO (First-Line)",
+        route: "Oral (PO)",
+        doseText: "25 - 50 mg/kg/day PO in 4 divided doses (max. 2g/day) for 10 full days",
+        minDosePerKgDay: 25,
+        maxDosePerKgDay: 50,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 2000,
+        duration: "10 days",
+        notes: "Take 1 hour before or 2 hours after meals. Must complete full 10 days to eradicate carriage and prevent rheumatic fever."
+      },
+      {
+        antibioticId: "amoxicillin",
+        type: "first_line",
+        label: "Amoxicillin PO (Alternative First-Line - Better Taste & OD Dosing)",
+        route: "Oral (PO)",
+        doseText: "50 mg/kg/day PO once daily (OD) or in 2 divided doses (max. 1g/day) for 10 full days",
+        minDosePerKgDay: 50,
+        maxDosePerKgDay: 50,
+        dividedDoses: 2,
+        frequency: "q12h (or once daily OD)",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 1000,
+        duration: "10 days",
+        notes: "Once-daily dosing (50mg/kg OD, max 1g/day) is endorsed by NAG 2024, AHA, and IDSA as equivalent efficacy to Penicillin V, with better adherence and suspension taste."
+      },
+      {
+        antibioticId: "benzylpenicillin",
+        type: "first_line",
+        label: "Benzylpenicillin (Penicillin G) IV (Severe / Inability to swallow)",
+        route: "Intravenous (IV)",
+        doseText: "100,000 - 200,000 units/kg/day IV in 4 divided doses (max. 24 million units/day)",
+        minDosePerKgDay: 100000,
+        maxDosePerKgDay: 200000,
+        unit: "units",
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 6000000,
+        maxDailyDoseMg: 24000000,
+        duration: "10 days total (switch to oral once tolerating)",
+        notes: "For severe cases or peritonsillar cellulitis unable to tolerate oral therapy. Switch to oral penicillin V or amoxicillin once improved."
+      },
+      {
+        antibioticId: "cephalexin",
+        type: "alternative",
+        label: "Cephalexin PO (Non-severe Penicillin Allergy)",
+        route: "Oral (PO)",
+        doseText: "25 - 50 mg/kg/day PO in 2 divided doses (max. 500mg/dose, 2g/day) for 10 days",
+        minDosePerKgDay: 25,
+        maxDosePerKgDay: 50,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 2000,
+        duration: "10 days",
+        notes: "Safe for non-life-threatening penicillin allergy (maculopapular rash). Complete 10 days."
+      },
+      {
+        antibioticId: "erythromycin",
+        type: "alternative",
+        label: "Erythromycin Ethylsuccinate PO (Severe Penicillin Anaphylaxis)",
+        route: "Oral (PO)",
+        doseText: "40 - 50 mg/kg/day PO in 2 divided doses (max. 800mg/dose, 2g/day) for 10 days",
+        minDosePerKgDay: 40,
+        maxDosePerKgDay: 50,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 800,
+        maxDailyDoseMg: 2000,
+        duration: "10 days",
+        notes: "Indicated for true IgE-mediated anaphylaxis to beta-lactams."
+      },
+      {
+        antibioticId: "azithromycin",
+        type: "alternative",
+        label: "Azithromycin PO (Severe Allergy Alternative)",
+        route: "Oral (PO)",
+        doseText: "12 mg/kg/day PO once daily (max. 500mg/day) for 5 days",
+        minDosePerKgDay: 12,
+        maxDosePerKgDay: 12,
+        dividedDoses: 1,
+        frequency: "Once daily (OD)",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 500,
+        duration: "5 days",
+        notes: "High tissue concentration allows shorter 5-day course."
+      }
+    ]
+  },
+  {
+    id: "acute_otitis_media",
+    name: "Acute Otitis Media (AOM)",
+    category: "ENT / Primary Care",
+    ageSuitability: "≥ 6 months to 18 years",
+    commonOrganisms: "Streptococcus pneumoniae, non-typeable H. influenzae, Moraxella catarrhalis",
+    comments: "Watchful waiting (48-72h) recommended if ≥2 years with mild unilateral symptoms. High-dose Amoxicillin is preferred to overcome intermediate penicillin-resistant S. pneumoniae.",
+    antibiotics: [
+      {
+        antibioticId: "amoxicillin",
+        type: "first_line",
+        label: "High-Dose Amoxicillin PO (Preferred First-Line)",
+        route: "Oral (PO)",
+        doseText: "80 - 90 mg/kg/day PO in 2 to 3 divided doses (max. 1g/dose, 3g/day)",
+        minDosePerKgDay: 80,
+        maxDosePerKgDay: 90,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 3000,
+        duration: "5 - 7 days (10 days if <2 years)",
+        whoWeightBands: [
+          { minKg: 3, maxKg: 5, doseText: "250 mg q12h" },
+          { minKg: 6, maxKg: 9, doseText: "375 mg q12h" },
+          { minKg: 10, maxKg: 14, doseText: "500 mg q12h" },
+          { minKg: 15, maxKg: 19, doseText: "750 mg q12h" },
+          { minKg: 20, maxKg: 999, doseText: "500 mg q8h or 1g q12h" }
+        ],
+        notes: "Duration: 10 days for age <2 years; 5-7 days for age ≥2 years."
+      },
+      {
+        antibioticId: "amoxicillin_clavulanate",
+        type: "second_line",
+        label: "Amoxicillin/Clavulanate (Augmentin 7:1) (Failure at 48-72h / Conjunctivitis-Otitis)",
+        route: "Oral (PO)",
+        doseText: "80 - 90 mg/kg/day (amoxicillin component) PO in 2 divided doses (max. 2g amoxicillin/day)",
+        minDosePerKgDay: 80,
+        maxDosePerKgDay: 90,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "7 - 10 days",
+        notes: "Indicated if child received amoxicillin in past 30 days or failed to improve after 48-72 hours."
+      },
+      {
+        antibioticId: "cefuroxime",
+        type: "alternative",
+        label: "Cefuroxime Axetil PO (Non-severe Penicillin Allergy)",
+        route: "Oral (PO)",
+        doseText: "30 mg/kg/day PO in 2 divided doses (max. 250mg/dose, 500mg/day)",
+        minDosePerKgDay: 30,
+        maxDosePerKgDay: 30,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 250,
+        maxDailyDoseMg: 500,
+        duration: "7 - 10 days",
+        notes: "Take with food to increase bioavailability and mask bitter taste."
+      },
+      {
+        antibioticId: "azithromycin",
+        type: "alternative",
+        label: "Azithromycin PO (Severe Type 1 Penicillin Anaphylaxis)",
+        route: "Oral (PO)",
+        doseText: "10 mg/kg/day PO OD on Day 1 (max. 500mg), then 5 mg/kg/day PO OD on Days 2-5 (max. 250mg)",
+        minDosePerKgDay: 10,
+        maxDosePerKgDay: 10,
+        dividedDoses: 1,
+        frequency: "Once daily (OD)",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 500,
+        duration: "5 days",
+        notes: "Reserve for true beta-lactam anaphylaxis."
+      }
+    ]
+  },
+  {
+    id: "acute_rhinosinusitis",
+    name: "Acute Bacterial Rhinosinusitis (ABRS)",
+    category: "ENT / Primary Care",
+    ageSuitability: "≥ 1 year to 18 years",
+    commonOrganisms: "Streptococcus pneumoniae, H. influenzae, Moraxella catarrhalis",
+    comments: "Majority of rhinosinusitis is viral. Suspect bacterial when: 1. Symptoms persist ≥10 days without improvement; 2. Worsening double-sickening course; 3. High fever ≥39°C with purulent nasal discharge for ≥3 consecutive days.",
+    antibiotics: [
+      {
+        antibioticId: "amoxicillin",
+        type: "first_line",
+        label: "Amoxicillin PO (Preferred First-Line)",
+        route: "Oral (PO)",
+        doseText: "80 - 90 mg/kg/day PO in 2 divided doses (max. 2g/day) for 5 days",
+        minDosePerKgDay: 80,
+        maxDosePerKgDay: 90,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "5 days",
+        notes: "NAG 2024 recommends 5-day course. Re-evaluate if not improving after 72 hours."
+      },
+      {
+        antibioticId: "amoxicillin_clavulanate",
+        type: "first_line",
+        label: "Amoxicillin/Clavulanate PO (Augmentin 7:1) (High Risk / Daycare / Prior Antibiotics)",
+        route: "Oral (PO)",
+        doseText: "80 - 90 mg/kg/day (amoxicillin) PO in 2 divided doses (max. 2g/day) for 5 days",
+        minDosePerKgDay: 80,
+        maxDosePerKgDay: 90,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "5 days",
+        notes: "Covers beta-lactamase producing H. influenzae and Moraxella."
+      },
+      {
+        antibioticId: "cefuroxime",
+        type: "alternative",
+        label: "Cefuroxime Axetil PO (Non-life-threatening Allergy)",
+        route: "Oral (PO)",
+        doseText: "30 mg/kg/day PO in 2 divided doses (max. 500mg/dose, 1g/day) for 5 days",
+        minDosePerKgDay: 30,
+        maxDosePerKgDay: 30,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 1000,
+        duration: "5 days",
+        notes: "Second-generation cephalosporin for non-IgE penicillin allergy."
+      },
+      {
+        antibioticId: "erythromycin",
+        type: "alternative",
+        label: "Erythromycin Ethylsuccinate PO (Severe Beta-Lactam Allergy)",
+        route: "Oral (PO)",
+        doseText: "40 - 50 mg/kg/day PO in 2 divided doses (max. 800mg/dose, 2g/day) for 5 days",
+        minDosePerKgDay: 40,
+        maxDosePerKgDay: 50,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 800,
+        maxDailyDoseMg: 2000,
+        duration: "5 days",
+        notes: "For patients with true immediate anaphylaxis."
+      }
+    ]
+  },
+  {
+    id: "acute_epiglottitis",
+    name: "Acute Epiglottitis / Supraglottitis",
+    category: "ENT / Primary Care",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Haemophilus influenzae type b (Hib), Streptococcus pyogenes, S. pneumoniae, S. aureus",
+    comments: "AIRWAY EMERGENCY! Do NOT examine throat with spatula. Transfer immediately to operating theatre with ENT and Anaesthesiology for controlled airway securing before any blood taking or invasive procedures.",
+    antibiotics: [
+      {
+        antibioticId: "cefotaxime",
+        type: "first_line",
+        label: "Cefotaxime IV (Preferred First-Line)",
+        route: "Intravenous (IV)",
+        doseText: "150 - 200 mg/kg/day IV in 3 to 4 divided doses (max. 2g/dose, 8g/day)",
+        minDosePerKgDay: 150,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "7 - 10 days",
+        notes: "Administer immediately after airway is secured."
+      },
+      {
+        antibioticId: "ceftriaxone",
+        type: "first_line",
+        label: "Ceftriaxone IV (Alternative First-Line)",
+        route: "Intravenous (IV)",
+        doseText: "50 - 100 mg/kg/day IV once daily (max. 2g/day)",
+        minDosePerKgDay: 50,
+        maxDosePerKgDay: 100,
+        dividedDoses: 1,
+        frequency: "q24h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 2000,
+        duration: "7 - 10 days",
+        notes: "Potent parenteral broad-spectrum third generation cephalosporin."
+      },
+      {
+        antibioticId: "cloxacillin",
+        type: "second_line",
+        label: "Cloxacillin IV (Add if Staph aureus / toxic shock suspected)",
+        route: "Intravenous (IV)",
+        doseText: "100 - 200 mg/kg/day IV in 4 divided doses (max. 2g/dose, 8g/day)",
+        minDosePerKgDay: 100,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "7 - 10 days",
+        notes: "Covers MSSA."
+      }
+    ]
+  },
+  {
+    id: "diphtheria_paediatric",
+    name: "Respiratory Diphtheria (Updated Jan '26)",
+    category: "ENT / Primary Care",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Corynebacterium diphtheriae (toxin-producing)",
+    comments: "NOTIFY IMMEDIATELY! Administer Diphtheria Antitoxin (DAT) without delay based on clinical suspicion and membrane extent. Strict respiratory isolation. Trace and treat close contacts.",
+    antibiotics: [
+      {
+        antibioticId: "erythromycin",
+        type: "first_line",
+        label: "Erythromycin Ethylsuccinate PO/IV (First-Line)",
+        route: "Oral (PO) / IV",
+        doseText: "40 - 50 mg/kg/day PO in 4 divided doses (max. 500mg/dose, 2g/day) for 14 days",
+        minDosePerKgDay: 40,
+        maxDosePerKgDay: 50,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 2000,
+        duration: "14 days",
+        notes: "Eradicates organism to halt toxin production. Complete full 14-day course. Document negative repeat swabs at 24h & 48h post-treatment."
+      },
+      {
+        antibioticId: "benzylpenicillin",
+        type: "first_line",
+        label: "Benzylpenicillin (Penicillin G) IV (Alternative First-Line)",
+        route: "Intravenous (IV)",
+        doseText: "100,000 - 150,000 units/kg/day IV in 4 divided doses (max. 12 million units/day) for 14 days",
+        minDosePerKgDay: 100000,
+        maxDosePerKgDay: 150000,
+        unit: "units",
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 3000000,
+        maxDailyDoseMg: 12000000,
+        duration: "14 days",
+        notes: "Parenteral therapy until patient can comfortably swallow oral erythromycin."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 2. RESPIRATORY INFECTIONS (B10 & C1)
+  // =========================================================================
+  {
+    id: "cap_outpatient",
+    name: "Community-Acquired Pneumonia (CAP) - Outpatient / Mild",
+    category: "Respiratory",
+    ageSuitability: "≥ 3 months to 18 years",
+    commonOrganisms: "Viral (RSV, Influenza, hMPV), Streptococcus pneumoniae, Group A Streptococcus, H. influenzae, Mycoplasma pneumoniae",
+    comments: "Antibiotics are not routinely recommended if viral infection is suspected. For bacterial suspicion in outpatient setting, high-dose Amoxicillin is preferred. Review at 48 hours.",
+    antibiotics: [
+      {
+        antibioticId: "amoxicillin",
+        type: "first_line",
+        label: "High-dose Amoxicillin (Preferred)",
+        route: "Oral (PO)",
+        doseText: "80 - 90 mg/kg/day PO in 2 to 3 divided doses (max. 1g/dose, 3g/day) for 5 days",
+        minDosePerKgDay: 80,
+        maxDosePerKgDay: 90,
+        dividedDoses: 2,
+        frequency: "q12h (or q8h)",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 3000,
+        duration: "5 days",
+        whoWeightBands: [
+          { minKg: 3, maxKg: 5, doseText: "250 mg q12h" },
+          { minKg: 6, maxKg: 9, doseText: "375 mg q12h" },
+          { minKg: 10, maxKg: 14, doseText: "500 mg q12h" },
+          { minKg: 15, maxKg: 19, doseText: "750 mg q12h" },
+          { minKg: 20, maxKg: 999, doseText: "500 mg q8h or 1g q12h" }
+        ],
+        notes: "NAG 2024 & WHO endorse weight-band dosing to streamline prescribing and minimize calculation errors. Safe wide therapeutic index."
+      },
+      {
+        antibioticId: "erythromycin",
+        type: "alternative",
+        label: "Erythromycin Ethylsuccinate (Alternative / Penicillin Allergy)",
+        route: "Oral (PO)",
+        doseText: "40 - 50 mg/kg/day PO in 2 divided doses (max. 800mg/dose, 2g/day) for 7-10 days",
+        minDosePerKgDay: 40,
+        maxDosePerKgDay: 50,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 800,
+        maxDailyDoseMg: 2000,
+        duration: "7 - 10 days",
+        notes: "Indicated if Mycoplasma pneumoniae suspected, or in penicillin allergy."
+      },
+      {
+        antibioticId: "azithromycin",
+        type: "alternative",
+        label: "Azithromycin (Atypical Pathogens / Alternative)",
+        route: "Oral (PO)",
+        doseText: "10 mg/kg/day PO OD on Day 1 (max. 500mg), then 5 mg/kg/day PO OD on Days 2-5 (max. 250mg)",
+        minDosePerKgDay: 10,
+        maxDosePerKgDay: 10,
+        dividedDoses: 1,
+        frequency: "Once daily (OD)",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 500,
+        duration: "5 days",
+        notes: "Convenient once-daily dosing. Use for suspected atypical pneumonia."
+      }
+    ]
+  },
+  {
+    id: "cap_inpatient_severe",
+    name: "Community-Acquired Pneumonia (CAP) - Inpatient / Severe",
+    category: "Respiratory",
+    ageSuitability: "≥ 3 months to 18 years",
+    commonOrganisms: "Streptococcus pneumoniae, Staphylococcus aureus, Group A Streptococcus, H. influenzae",
+    comments: "Obtain blood culture prior to antibiotics. Switch to oral antibiotics once child is afebrile for 24-48h and clinically improved.",
+    antibiotics: [
+      {
+        antibioticId: "ampicillin",
+        type: "first_line",
+        label: "Ampicillin IV (First-Line Inpatient)",
+        route: "Intravenous (IV)",
+        doseText: "150 - 200 mg/kg/day IV in 4 divided doses (max. 2g/dose, 8g/day)",
+        minDosePerKgDay: 150,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "7 - 10 days",
+        notes: "Preferred empiric parenteral therapy for fully immunized children without empyema."
+      },
+      {
+        antibioticId: "cefotaxime",
+        type: "second_line",
+        label: "Cefotaxime IV (Severe / Unimmunised / Pleural Effusion)",
+        route: "Intravenous (IV)",
+        doseText: "150 - 200 mg/kg/day IV in 3 to 4 divided doses (max. 2g/dose, 8g/day)",
+        minDosePerKgDay: 150,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "7 - 10 days",
+        notes: "Indicated if critically ill, unimmunized, or with effusion."
+      },
+      {
+        antibioticId: "ceftriaxone",
+        type: "second_line",
+        label: "Ceftriaxone IV (Alternative Inpatient / Once Daily)",
+        route: "Intravenous (IV)",
+        doseText: "50 - 80 mg/kg/day IV in 1 to 2 divided doses (max. 2g/day)",
+        minDosePerKgDay: 50,
+        maxDosePerKgDay: 80,
+        dividedDoses: 1,
+        frequency: "q24h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 2000,
+        duration: "7 - 10 days",
+        notes: "Avoid concurrent calcium-containing IV solutions."
+      },
+      {
+        antibioticId: "cloxacillin",
+        type: "second_line",
+        label: "Cloxacillin IV (Add for MSSA / Cavitary / Pneumatocele)",
+        route: "Intravenous (IV)",
+        doseText: "100 - 200 mg/kg/day IV in 4 divided doses (max. 2g/dose, 8g/day)",
+        minDosePerKgDay: 100,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "10 - 14 days",
+        notes: "Add if Staphylococcus aureus is clinically suspected."
+      }
+    ]
+  },
+  {
+    id: "empyema_thoracis",
+    name: "Empyema Thoracis / Parapneumonic Effusion",
+    category: "Respiratory",
+    ageSuitability: "≥ 3 months to 18 years",
+    commonOrganisms: "Streptococcus pneumoniae, Staphylococcus aureus, Group A Streptococcus",
+    comments: "Diagnostic thoracocentesis & chest drain insertion required. Continue IV antibiotics until chest tube removed and fever resolved, then switch to oral.",
+    antibiotics: [
+      {
+        antibioticId: "ampicillin_sulbactam",
+        type: "first_line",
+        label: "Ampicillin/Sulbactam IV (Unasyn)",
+        route: "Intravenous (IV)",
+        doseText: "150 - 200 mg/kg/day (ampicillin component) IV in 4 divided doses (max. 8g ampicillin/day)",
+        minDosePerKgDay: 150,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "2 - 4 weeks total",
+        notes: "Broad coverage including anaerobic and beta-lactamase producing organisms."
+      },
+      {
+        antibioticId: "cefotaxime",
+        type: "first_line",
+        label: "Cefotaxime IV PLUS Cloxacillin IV",
+        route: "Intravenous (IV)",
+        doseText: "Cefotaxime 150-200 mg/kg/day IV q6h + Cloxacillin 100-200 mg/kg/day IV q6h",
+        minDosePerKgDay: 150,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "2 - 4 weeks total",
+        notes: "Covers both Gram-negative/pneumococcal pathogens and MSSA."
+      },
+      {
+        antibioticId: "vancomycin",
+        type: "second_line",
+        label: "Vancomycin IV (If MRSA suspected or critical sepsis)",
+        route: "Intravenous (IV)",
+        doseText: "40 - 60 mg/kg/day IV in 3 to 4 divided doses (max. 2g/day). Monitor trough level.",
+        minDosePerKgDay: 40,
+        maxDosePerKgDay: 60,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "2 - 4 weeks",
+        notes: "Target trough: 15-20 mcg/mL."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 3. URINARY TRACT INFECTIONS (B13 & C7)
+  // =========================================================================
+  {
+    id: "uti_acute_pyelonephritis_infant_child",
+    name: "Acute Pyelonephritis / Febrile UTI (≥3 months)",
+    category: "Urinary Tract",
+    ageSuitability: "≥ 3 months to 18 years",
+    commonOrganisms: "Escherichia coli (80%), Klebsiella spp., Proteus mirabilis, Enterobacter spp.",
+    comments: "Obtain clean-catch or catheter urine culture prior to starting antibiotics. Duration: 7 to 10 days. Switch to oral once afebrile for 48h.",
+    antibiotics: [
+      {
+        antibioticId: "cephalexin",
+        type: "first_line",
+        label: "Cephalexin PO (First Line Oral)",
+        route: "Oral (PO)",
+        doseText: "25 - 50 mg/kg/day PO in 2 divided doses (max. 2g/day)",
+        minDosePerKgDay: 25,
+        maxDosePerKgDay: 50,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "7 - 10 days",
+        notes: "First-line oral option for mild to moderate pyelonephritis tolerating fluids."
+      },
+      {
+        antibioticId: "amoxicillin_clavulanate",
+        type: "first_line",
+        label: "Amoxicillin/Clavulanate PO (Augmentin 7:1)",
+        route: "Oral (PO)",
+        doseText: "40 - 50 mg/kg/day (amoxicillin) PO in 2 divided doses (max. 2g/day)",
+        minDosePerKgDay: 40,
+        maxDosePerKgDay: 50,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "7 - 10 days",
+        notes: "Formulation 7:1 (228mg/5mL or 457mg/5mL). For Formulation 14:1, dose is 80-90 mg/kg/day."
+      },
+      {
+        antibioticId: "cefotaxime",
+        type: "second_line",
+        label: "Cefotaxime IV (Hospitalized / Toxic / Vomiting)",
+        route: "Intravenous (IV)",
+        doseText: "150 - 200 mg/kg/day IV in 3 divided doses (max. 2g/dose, 6g/day)",
+        minDosePerKgDay: 150,
+        maxDosePerKgDay: 200,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 6000,
+        duration: "7 - 10 days",
+        notes: "First-line parenteral option. May add Amikacin if septic shock."
+      },
+      {
+        antibioticId: "ceftriaxone",
+        type: "second_line",
+        label: "Ceftriaxone IV / IM (Daily Inpatient / Outpatient Parenteral)",
+        route: "Intravenous (IV)",
+        doseText: "75 - 100 mg/kg/day IV/IM in 1 to 2 divided doses (max. 2g/day)",
+        minDosePerKgDay: 75,
+        maxDosePerKgDay: 100,
+        dividedDoses: 1,
+        frequency: "q24h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 2000,
+        duration: "7 - 10 days",
+        notes: "Convenient once-daily dosing."
+      },
+      {
+        antibioticId: "amikacin",
+        type: "second_line",
+        label: "Amikacin IV (Add if septic or suspected resistant GNB)",
+        route: "Intravenous (IV)",
+        doseText: "15 mg/kg/dose IV once daily (q24h) (max. 1.5g/day)",
+        minDosePerKgDay: 15,
+        maxDosePerKgDay: 15,
+        dividedDoses: 1,
+        frequency: "q24h",
+        maxSingleDoseMg: 1500,
+        maxDailyDoseMg: 1500,
+        duration: "3 - 5 days",
+        notes: "Extended interval aminoglycoside dosing."
+      }
+    ]
+  },
+  {
+    id: "uti_lower_cystitis",
+    name: "Lower Urinary Tract Infection (Acute Cystitis)",
+    category: "Urinary Tract",
+    ageSuitability: "≥ 3 months to 18 years",
+    commonOrganisms: "Escherichia coli, Proteus mirabilis, Klebsiella pneumoniae",
+    comments: "Afebrile child with dysuria, frequency, or urgency. Short-course therapy is effective. Duration: 3 to 5 days.",
+    antibiotics: [
+      {
+        antibioticId: "amoxicillin_clavulanate",
+        type: "first_line",
+        label: "Amoxicillin/Clavulanate PO (Augmentin 7:1) (Preferred)",
+        route: "Oral (PO)",
+        doseText: "40 - 50 mg/kg/day (amoxicillin) PO in 2 divided doses (max. 2g/day)",
+        minDosePerKgDay: 40,
+        maxDosePerKgDay: 50,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "3 - 5 days",
+        notes: "Standard 7:1 oral suspension."
+      },
+      {
+        antibioticId: "cefuroxime",
+        type: "first_line",
+        label: "Cefuroxime Axetil PO",
+        route: "Oral (PO)",
+        doseText: "30 mg/kg/day PO in 2 divided doses (max. 250mg/dose, 500mg/day)",
+        minDosePerKgDay: 30,
+        maxDosePerKgDay: 30,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 250,
+        maxDailyDoseMg: 500,
+        duration: "3 - 5 days",
+        notes: "Take with food."
+      },
+      {
+        antibioticId: "cotrimoxazole",
+        type: "first_line",
+        label: "Co-trimoxazole (Bactrim) PO",
+        route: "Oral (PO)",
+        doseText: "8 - 10 mg TMP/kg/day PO in 2 divided doses (max. 160mg TMP/dose, 320mg TMP/day)",
+        minDosePerKgDay: 8,
+        maxDosePerKgDay: 10,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 160,
+        maxDailyDoseMg: 320,
+        duration: "3 - 5 days",
+        notes: "Contraindicated in severe G6PD deficiency and neonates."
+      },
+      {
+        antibioticId: "nitrofurantoin",
+        type: "alternative",
+        label: "Nitrofurantoin PO (Alternative)",
+        route: "Oral (PO)",
+        doseText: "2 mg/kg/dose PO q12h (sustained-release) or 1 mg/kg/dose PO q6h (immediate-release) (max. 100mg/dose)",
+        minDosePerKgDay: 4,
+        maxDosePerKgDay: 4,
+        dividedDoses: 2,
+        frequency: "q12h (sustained-release)",
+        maxSingleDoseMg: 100,
+        maxDailyDoseMg: 200,
+        duration: "3 - 5 days",
+        notes: "For lower UTI only! Ineffective for pyelonephritis due to low tissue/renal parenchyma levels."
+      }
+    ]
+  },
+  {
+    id: "uti_chemoprophylaxis",
+    name: "UTI Chemoprophylaxis (Recurrent UTI / High-Grade VUR)",
+    category: "Urinary Tract",
+    ageSuitability: "Infants & Children",
+    commonOrganisms: "Escherichia coli, Enterococcus, Klebsiella",
+    comments: "Indicated for recurrent febrile UTI or dilating vesicoureteral reflux (VUR Grade III-V) awaiting imaging/surgery. Give single bedtime dose.",
+    antibiotics: [
+      {
+        antibioticId: "cotrimoxazole",
+        type: "first_line",
+        label: "Trimethoprim / Sulfamethoxazole (Bactrim) PO (Bedtime Prophylaxis)",
+        route: "Oral (PO)",
+        doseText: "2 mg TMP/kg/dose PO once daily at bedtime (max. 80mg TMP/dose)",
+        minDosePerKgDay: 2,
+        maxDosePerKgDay: 2,
+        perDose: true,
+        frequency: "Once daily at bedtime (ON)",
+        maxSingleDoseMg: 80,
+        maxDailyDoseMg: 80,
+        duration: "Long-term (as advised by paediatrician)",
+        notes: "First choice for age > 6 weeks. Bedtime administration allows high urinary overnight concentration."
+      },
+      {
+        antibioticId: "nitrofurantoin",
+        type: "first_line",
+        label: "Nitrofurantoin PO (Bedtime Prophylaxis)",
+        route: "Oral (PO)",
+        doseText: "1 - 2 mg/kg/dose PO once daily at bedtime (max. 100mg/dose)",
+        minDosePerKgDay: 1,
+        maxDosePerKgDay: 2,
+        perDose: true,
+        frequency: "Once daily at bedtime (ON)",
+        maxSingleDoseMg: 100,
+        maxDailyDoseMg: 100,
+        duration: "Long-term",
+        notes: "Contraindicated if CrCl < 30 mL/min, G6PD deficiency, or age < 1 month."
+      },
+      {
+        antibioticId: "cephalexin",
+        type: "alternative",
+        label: "Cephalexin PO (Infants < 6 weeks / Neonates)",
+        route: "Oral (PO)",
+        doseText: "10 - 15 mg/kg/dose PO once daily at bedtime (max. 250mg/dose)",
+        minDosePerKgDay: 10,
+        maxDosePerKgDay: 15,
+        perDose: true,
+        frequency: "Once daily at bedtime (ON)",
+        maxSingleDoseMg: 250,
+        maxDailyDoseMg: 250,
+        duration: "Until age 2-3 months",
+        notes: "Preferred agent in young infants under 6 weeks where sulfonamides/nitrofurantoin are contraindicated."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 4. ORTHOPAEDIC INFECTIONS (B8)
+  // =========================================================================
+  {
+    id: "septic_arthritis_osteomyelitis",
+    name: "Septic Arthritis & Acute Osteomyelitis",
+    category: "Orthopaedic Infections",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Staphylococcus aureus (MSSA/MRSA), Streptococcus pyogenes, S. pneumoniae, Kingella kingae (<5 yrs)",
+    comments: "Urgent surgical washout/aspiration indicated for septic arthritis. Total duration: Septic arthritis 3-4 weeks; Osteomyelitis 4-6 weeks. Switch to high-dose oral therapy (Cephalexin or Cloxacillin) once clinically improved, afebrile for 48h, and CRP declining by ≥50%.",
+    antibiotics: [
+      {
+        antibioticId: "cloxacillin",
+        type: "first_line",
+        label: "Cloxacillin IV (First-Line MSSA High-Dose)",
+        route: "Intravenous (IV)",
+        doseText: "200 mg/kg/day IV in 4 to 6 divided doses (max. 2g/dose, 12g/day)",
+        minDosePerKgDay: 200,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 12000,
+        duration: "3 - 6 weeks total",
+        notes: "Gold standard high-dose anti-staphylococcal therapy."
+      },
+      {
+        antibioticId: "cefazolin",
+        type: "first_line",
+        label: "Cefazolin IV (Alternative First-Line - Convenient q8h)",
+        route: "Intravenous (IV)",
+        doseText: "100 - 150 mg/kg/day IV in 3 divided doses (max. 1g/dose, 4.5g/day)",
+        minDosePerKgDay: 100,
+        maxDosePerKgDay: 150,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 4500,
+        duration: "3 - 6 weeks total",
+        notes: "Convenient 8-hourly dosing with lower incidence of phlebitis and hypersensitivity than cloxacillin."
+      },
+      {
+        antibioticId: "cefotaxime",
+        type: "first_line",
+        label: "Cefotaxime IV (Add if Age ≤ 3 months or Kingella suspected)",
+        route: "Intravenous (IV)",
+        doseText: "200 mg/kg/day IV in 4 divided doses (max. 2g/dose, 8g/day)",
+        minDosePerKgDay: 200,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "3 - 6 weeks total",
+        notes: "Combine with Cloxacillin in infants ≤3 months for Gram-negative and GBS coverage."
+      },
+      {
+        antibioticId: "vancomycin",
+        type: "second_line",
+        label: "Vancomycin IV (Proven / Suspected MRSA)",
+        route: "Intravenous (IV)",
+        doseText: "45 - 60 mg/kg/day IV in 3 to 4 divided doses (max. 2g/day). Target trough 15 - 20 mcg/mL.",
+        minDosePerKgDay: 45,
+        maxDosePerKgDay: 60,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "3 - 6 weeks",
+        notes: "Mandatory TDM. Maintain trough 15-20 mcg/mL for bone/joint penetration."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 5. CENTRAL NERVOUS SYSTEM INFECTIONS (B2)
+  // =========================================================================
+  {
+    id: "acute_bacterial_meningitis_child",
+    name: "Acute Bacterial Meningitis (Infant & Child ≥3 months)",
+    category: "Central Nervous System",
+    ageSuitability: "≥ 3 months to 18 years",
+    commonOrganisms: "Streptococcus pneumoniae, Neisseria meningitidis, Haemophilus influenzae type b",
+    comments: "Medical emergency! Start empiric therapy immediately after blood culture. Do NOT delay antibiotics if lumbar puncture is postponed. Add Dexamethasone 0.15 mg/kg IV q6h before or with first dose for Hib/pneumococcal meningitis.",
+    antibiotics: [
+      {
+        antibioticId: "cefotaxime",
+        type: "first_line",
+        label: "Cefotaxime IV (Preferred First Line Meningitic Dose)",
+        route: "Intravenous (IV)",
+        doseText: "200 - 300 mg/kg/day IV in 3 to 4 divided doses (max. 2g/dose, 12g/day)",
+        minDosePerKgDay: 200,
+        maxDosePerKgDay: 300,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 12000,
+        duration: "10 - 14 days",
+        notes: "High CNS penetration. Continue for minimum 10-14 days for S. pneumoniae, 7 days for N. meningitidis."
+      },
+      {
+        antibioticId: "ceftriaxone",
+        type: "first_line",
+        label: "Ceftriaxone IV (Alternative Meningitic Dose)",
+        route: "Intravenous (IV)",
+        doseText: "100 mg/kg/day IV in 1 to 2 divided doses (max. 4g/day)",
+        minDosePerKgDay: 100,
+        maxDosePerKgDay: 100,
+        dividedDoses: 2,
+        frequency: "q12h (or q24h)",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 4000,
+        duration: "10 - 14 days",
+        notes: "Can give as 100mg/kg OD or 50mg/kg q12h. Highly potent."
+      },
+      {
+        antibioticId: "vancomycin",
+        type: "first_line",
+        label: "Vancomycin IV (Combine if Cephalosporin-resistant Pneumococcus suspected)",
+        route: "Intravenous (IV)",
+        doseText: "60 mg/kg/day IV in 4 divided doses (max. 2g/day). Target trough 15 - 20 mcg/mL.",
+        minDosePerKgDay: 60,
+        maxDosePerKgDay: 60,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 2000,
+        duration: "10 - 14 days",
+        notes: "Add routinely if PRSP (penicillin/cephalosporin-resistant S. pneumoniae) is suspected."
+      },
+      {
+        antibioticId: "ampicillin",
+        type: "second_line",
+        label: "Ampicillin IV (Add if Listeria monocytogenes suspected)",
+        route: "Intravenous (IV)",
+        doseText: "300 mg/kg/day IV in 4 divided doses (max. 2g/dose, 12g/day)",
+        minDosePerKgDay: 300,
+        maxDosePerKgDay: 300,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 12000,
+        duration: "14 - 21 days",
+        notes: "Indicated in immunocompromised children or infants < 3 months."
+      }
+    ]
+  },
+  {
+    id: "brain_abscess_paediatric",
+    name: "Brain Abscess & Subdural Empyema",
+    category: "Central Nervous System",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Streptococcus anginosus group, S. aureus, Enterobacterales, Anaerobes",
+    comments: "Urgent neurosurgical consultation for aspiration/drainage. Empiric therapy must cross blood-brain barrier and cover anaerobes. Duration: 4-6 weeks (longer if multiple non-drained lesions).",
+    antibiotics: [
+      {
+        antibioticId: "cefotaxime",
+        type: "first_line",
+        label: "Cefotaxime IV PLUS Metronidazole IV",
+        route: "Intravenous (IV)",
+        doseText: "Cefotaxime 200-300 mg/kg/day IV q6h + Metronidazole 30-40 mg/kg/day IV q8h",
+        minDosePerKgDay: 200,
+        maxDosePerKgDay: 300,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 12000,
+        duration: "4 - 6 weeks",
+        notes: "Covers Streptococci, Gram-negative bacilli, and oral anaerobes."
+      },
+      {
+        antibioticId: "meropenem",
+        type: "second_line",
+        label: "Meropenem IV (Post-Neurosurgical / Hospital-Acquired / Pseudomonas)",
+        route: "Intravenous (IV)",
+        doseText: "120 mg/kg/day IV in 3 divided doses (max. 2g/dose, 6g/day)",
+        minDosePerKgDay: 120,
+        maxDosePerKgDay: 120,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 6000,
+        duration: "4 - 6 weeks",
+        notes: "High meningitic doses with excellent anaerobic and Gram-negative penetration."
+      },
+      {
+        antibioticId: "vancomycin",
+        type: "second_line",
+        label: "Vancomycin IV (Add if Post-Craniotomy or MRSA suspected)",
+        route: "Intravenous (IV)",
+        doseText: "60 mg/kg/day IV in 4 divided doses (max. 2g/day). Target trough 15 - 20 mcg/mL.",
+        minDosePerKgDay: 60,
+        maxDosePerKgDay: 60,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 2000,
+        duration: "4 - 6 weeks",
+        notes: "Target trough: 15-20 mcg/mL."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 6. GASTROINTESTINAL INFECTIONS (B4 & C5)
+  // =========================================================================
+  {
+    id: "acute_bacterial_dysentery",
+    name: "Acute Bacterial Gastroenteritis / Dysentery (Bloody Diarrhoea)",
+    category: "Gastrointestinal",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Shigella spp., Salmonella (non-typhoidal), Campylobacter jejuni, E. histolytica",
+    comments: "Oral rehydration is paramount! Antibiotics are NOT routinely indicated for acute watery diarrhoea. Indicated only for macroscopic blood in stool (dysentery), systemic toxicity, severe malnutrition, or high-risk infants.",
+    antibiotics: [
+      {
+        antibioticId: "azithromycin",
+        type: "first_line",
+        label: "Azithromycin PO (First Line for Shigellosis & Campylobacter)",
+        route: "Oral (PO)",
+        doseText: "10 - 12 mg/kg/day PO OD for 3 days (max. 500mg/day) OR 20 mg/kg single dose",
+        minDosePerKgDay: 10,
+        maxDosePerKgDay: 12,
+        dividedDoses: 1,
+        frequency: "Once daily (OD)",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 500,
+        duration: "3 days",
+        notes: "First choice in children. High intracellular tissue concentrations and short course."
+      },
+      {
+        antibioticId: "ceftriaxone",
+        type: "second_line",
+        label: "Ceftriaxone IV (Severe / Toxic / Sepsis / Unable to take oral)",
+        route: "Intravenous (IV)",
+        doseText: "50 - 75 mg/kg/day IV once daily (max. 2g/day)",
+        minDosePerKgDay: 50,
+        maxDosePerKgDay: 75,
+        dividedDoses: 1,
+        frequency: "q24h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 2000,
+        duration: "3 - 5 days",
+        notes: "Parenteral therapy for children with severe dehydration, bacteraemia or vomiting."
+      },
+      {
+        antibioticId: "metronidazole",
+        type: "alternative",
+        label: "Metronidazole PO (If Amoebic Dysentery / E. histolytica / Giardiasis)",
+        route: "Oral (PO)",
+        doseText: "30 - 40 mg/kg/day PO in 3 divided doses (max. 500mg/dose, 1.5g/day)",
+        minDosePerKgDay: 30,
+        maxDosePerKgDay: 40,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 1500,
+        duration: "7 - 10 days",
+        notes: "For trophozoites seen in stool microscopy or proven amoebic colitis."
+      }
+    ]
+  },
+  {
+    id: "typhoid_enteric_fever",
+    name: "Typhoid Fever / Enteric Fever",
+    category: "Gastrointestinal",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Salmonella enterica serovar Typhi, Salmonella Paratyphi",
+    comments: "High continuous fever, rose spots, hepatosplenomegaly, abdominal pain. Check blood culture, stool culture, and Widal/Tubex. Avoid premature discontinuation to prevent relapse.",
+    antibiotics: [
+      {
+        antibioticId: "ceftriaxone",
+        type: "first_line",
+        label: "Ceftriaxone IV (First-Line Inpatient)",
+        route: "Intravenous (IV)",
+        doseText: "75 - 100 mg/kg/day IV once daily (max. 2g/day) for 10 to 14 days",
+        minDosePerKgDay: 75,
+        maxDosePerKgDay: 100,
+        dividedDoses: 1,
+        frequency: "q24h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 2000,
+        duration: "10 - 14 days",
+        notes: "First-line parenteral therapy. Complete full 10-14 days."
+      },
+      {
+        antibioticId: "azithromycin",
+        type: "first_line",
+        label: "Azithromycin PO (First-Line Oral - Uncomplicated)",
+        route: "Oral (PO)",
+        doseText: "10 - 20 mg/kg/day PO once daily (max. 1g/day) for 7 days",
+        minDosePerKgDay: 10,
+        maxDosePerKgDay: 20,
+        dividedDoses: 1,
+        frequency: "Once daily (OD)",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 1000,
+        duration: "7 days",
+        notes: "Excellent intracellular penetration and low relapse rate."
+      },
+      {
+        antibioticId: "cefotaxime",
+        type: "second_line",
+        label: "Cefotaxime IV (Alternative Parenteral)",
+        route: "Intravenous (IV)",
+        doseText: "150 - 200 mg/kg/day IV in 3 divided doses (max. 6g/day)",
+        minDosePerKgDay: 150,
+        maxDosePerKgDay: 200,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 6000,
+        duration: "10 - 14 days",
+        notes: "Alternative 3rd generation cephalosporin."
+      }
+    ]
+  },
+  {
+    id: "cholera_paediatric",
+    name: "Cholera (Vibrio cholerae)",
+    category: "Gastrointestinal",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Vibrio cholerae O1 / O139",
+    comments: "RAPID FLUID RESUSCITATION IS LIFE-SAVING! Antibiotics are an adjunct to rehydration to reduce stool volume and shorten vibrio excretion period.",
+    antibiotics: [
+      {
+        antibioticId: "azithromycin",
+        type: "first_line",
+        label: "Azithromycin PO (Single Dose - Preferred in Children)",
+        route: "Oral (PO)",
+        doseText: "20 mg/kg PO as a single dose (max. 1g single dose)",
+        minDosePerKgDay: 20,
+        maxDosePerKgDay: 20,
+        perDose: true,
+        frequency: "Single stat dose",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 1000,
+        duration: "Single dose",
+        notes: "First line single-dose therapy endorsed by WHO and NAG 2024 for children."
+      },
+      {
+        antibioticId: "erythromycin",
+        type: "second_line",
+        label: "Erythromycin Ethylsuccinate PO (Alternative)",
+        route: "Oral (PO)",
+        doseText: "40 mg/kg/day PO in 4 divided doses (max. 1.6g/day) for 3 days",
+        minDosePerKgDay: 40,
+        maxDosePerKgDay: 40,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 400,
+        maxDailyDoseMg: 1600,
+        duration: "3 days",
+        notes: "Three-day regimen if azithromycin is unavailable."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 7. CARDIOVASCULAR INFECTIONS (B1)
+  // =========================================================================
+  {
+    id: "infective_endocarditis_paediatric",
+    name: "Infective Endocarditis (IE - Native Valve / Empiric)",
+    category: "Cardiovascular",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Viridans group Streptococci (40%), Staphylococcus aureus (35%), Enterococci, HACEK",
+    comments: "Obtain 3 sets of blood cultures from separate venipuncture sites before starting antibiotics. Urgent echocardiogram. Bactericidal synergistic combination required for 4-6 weeks.",
+    antibiotics: [
+      {
+        antibioticId: "ampicillin",
+        type: "first_line",
+        label: "Ampicillin IV PLUS Gentamicin IV (Subacute / Community Native Valve)",
+        route: "Intravenous (IV)",
+        doseText: "Ampicillin 200-300 mg/kg/day IV q6h + Gentamicin 3 mg/kg/day IV q8h",
+        minDosePerKgDay: 200,
+        maxDosePerKgDay: 300,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 12000,
+        duration: "4 - 6 weeks",
+        notes: "Covers Viridans streptococci and Enterococcus with aminoglycoside synergy."
+      },
+      {
+        antibioticId: "cloxacillin",
+        type: "first_line",
+        label: "Cloxacillin IV PLUS Gentamicin IV (Acute / S. aureus Suspected)",
+        route: "Intravenous (IV)",
+        doseText: "Cloxacillin 200 mg/kg/day IV q6h + Gentamicin 3 mg/kg/day IV q8h",
+        minDosePerKgDay: 200,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 12000,
+        duration: "4 - 6 weeks",
+        notes: "MSSA bactericidal regimen."
+      },
+      {
+        antibioticId: "vancomycin",
+        type: "second_line",
+        label: "Vancomycin IV PLUS Gentamicin IV (Prosthetic Valve / Hospital-Acquired / MRSA)",
+        route: "Intravenous (IV)",
+        doseText: "Vancomycin 45-60 mg/kg/day IV q6h + Gentamicin 3 mg/kg/day IV q8h. Target trough 15-20 mcg/mL.",
+        minDosePerKgDay: 45,
+        maxDosePerKgDay: 60,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "6 weeks",
+        notes: "Add Rifampicin for prosthetic valve endocarditis."
+      }
+    ]
+  },
+  {
+    id: "purulent_pericarditis",
+    name: "Acute Bacterial / Purulent Pericarditis",
+    category: "Cardiovascular",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Staphylococcus aureus, Streptococcus pneumoniae, H. influenzae, Gram-negative bacilli",
+    comments: "URGENT ECHOCARDIOGRAM! High risk of cardiac tamponade. Urgent pericardiocentesis / surgical drainage mandatory. Antibiotic duration: 4 weeks.",
+    antibiotics: [
+      {
+        antibioticId: "cloxacillin",
+        type: "first_line",
+        label: "Cloxacillin IV PLUS Cefotaxime IV (First-Line Empiric)",
+        route: "Intravenous (IV)",
+        doseText: "Cloxacillin 200 mg/kg/day IV q6h (max. 12g) + Cefotaxime 200-300 mg/kg/day IV q6h (max. 12g)",
+        minDosePerKgDay: 200,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 12000,
+        duration: "4 weeks",
+        notes: "Covers MSSA, S. pneumoniae, and Gram-negative bacilli."
+      },
+      {
+        antibioticId: "cefazolin",
+        type: "alternative",
+        label: "Cefazolin IV (Penicillin Allergy Alternative)",
+        route: "Intravenous (IV)",
+        doseText: "100 mg/kg/day IV in 3 divided doses (max. 6g/day)",
+        minDosePerKgDay: 100,
+        maxDosePerKgDay: 100,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 6000,
+        duration: "4 weeks",
+        notes: "Non-severe allergy alternative."
+      },
+      {
+        antibioticId: "vancomycin",
+        type: "second_line",
+        label: "Vancomycin IV (MRSA Suspected / Septic Shock)",
+        route: "Intravenous (IV)",
+        doseText: "45 - 60 mg/kg/day IV in 4 divided doses (max. 2g/day). Target trough 15 - 20 mcg/mL.",
+        minDosePerKgDay: 45,
+        maxDosePerKgDay: 60,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "4 weeks",
+        notes: "Target trough: 15-20 mcg/mL."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 8. CHEMOPROPHYLAXIS (B3)
+  // =========================================================================
+  {
+    id: "rheumatic_fever_prophylaxis",
+    name: "Acute Rheumatic Fever (ARF) - Secondary Chemoprophylaxis",
+    category: "Chemoprophylaxis",
+    ageSuitability: "Children & Adolescents with prior ARF / RHD",
+    commonOrganisms: "Streptococcus pyogenes (Group A Streptococcus)",
+    comments: "Continuous antimicrobial prophylaxis is vital to prevent recurrent GAS infections and progressive Rheumatic Heart Disease (RHD). Duration: Minimum 5-10 years post-attack or until age 21 (longer if significant residual valvular heart disease).",
+    antibiotics: [
+      {
+        antibioticId: "benzathine_penicillin",
+        type: "first_line",
+        label: "Benzathine Penicillin G (BPG) IM (Gold Standard Every 3-4 Weeks)",
+        route: "Intramuscular (IM)",
+        doseText: "< 27 kg: 600,000 units IM every 3-4 weeks; ≥ 27 kg: 1,200,000 units (1.2 Mega units) IM every 3-4 weeks",
+        minDosePerKgDay: 600000,
+        maxDosePerKgDay: 1200000,
+        unit: "units",
+        dividedDoses: 1,
+        perDose: true,
+        frequency: "Every 3 to 4 weeks IM",
+        maxSingleDoseMg: 1200000,
+        maxDailyDoseMg: 1200000,
+        duration: "5 to 10 years (or until age 21)",
+        notes: "Most effective regimen to prevent recurrence. Deep IM injection."
+      },
+      {
+        antibioticId: "phenoxymethylpenicillin",
+        type: "first_line",
+        label: "Penicillin V (Phenoxymethylpenicillin) PO (Daily Oral Option)",
+        route: "Oral (PO)",
+        doseText: "250 mg PO twice daily (q12h) continuously",
+        minDosePerKgDay: 250,
+        maxDosePerKgDay: 500,
+        dividedDoses: 2,
+        frequency: "q12h (twice daily continuous)",
+        maxSingleDoseMg: 250,
+        maxDailyDoseMg: 500,
+        duration: "Continuous",
+        notes: "Oral alternative for patients refusing injections. Strict daily compliance required."
+      },
+      {
+        antibioticId: "erythromycin",
+        type: "alternative",
+        label: "Erythromycin Ethylsuccinate PO (Penicillin Allergy)",
+        route: "Oral (PO)",
+        doseText: "250 mg PO twice daily (q12h) continuously",
+        minDosePerKgDay: 250,
+        maxDosePerKgDay: 500,
+        dividedDoses: 2,
+        frequency: "q12h continuous",
+        maxSingleDoseMg: 250,
+        maxDailyDoseMg: 500,
+        duration: "Continuous",
+        notes: "For patients with documented penicillin allergy."
+      }
+    ]
+  },
+  {
+    id: "post_splenectomy_prophylaxis",
+    name: "Post-Splenectomy / Functional Asplenia Chemoprophylaxis",
+    category: "Chemoprophylaxis",
+    ageSuitability: "Asplenic / Sickle Cell / Thalassemia Post-Splenectomy",
+    commonOrganisms: "Streptococcus pneumoniae (OPSS / overwhelming post-splenectomy sepsis), N. meningitidis, Hib",
+    comments: "Overwhelming Post-Splenectomy Sepsis (OPSS) carries a mortality rate >50%. Daily penicillin prophylaxis PLUS pneumococcal, meningococcal, and Hib vaccinations are lifesaving.",
+    antibiotics: [
+      {
+        antibioticId: "phenoxymethylpenicillin",
+        type: "first_line",
+        label: "Penicillin V (Phenoxymethylpenicillin) PO",
+        route: "Oral (PO)",
+        doseText: "< 5 years: 125 mg PO q12h; ≥ 5 years: 250 mg PO q12h",
+        minDosePerKgDay: 125,
+        maxDosePerKgDay: 250,
+        dividedDoses: 2,
+        frequency: "q12h (twice daily continuous)",
+        maxSingleDoseMg: 250,
+        maxDailyDoseMg: 500,
+        duration: "At least until age 5 (or minimum 2-3 years post-splenectomy)",
+        notes: "Continuous daily oral prophylaxis."
+      },
+      {
+        antibioticId: "amoxicillin",
+        type: "first_line",
+        label: "Amoxicillin PO (Alternative Daily Prophylaxis)",
+        route: "Oral (PO)",
+        doseText: "< 5 years: 125 mg PO once daily (OD); ≥ 5 years: 250 mg PO once daily (OD)",
+        minDosePerKgDay: 125,
+        maxDosePerKgDay: 250,
+        dividedDoses: 1,
+        frequency: "Once daily (OD)",
+        maxSingleDoseMg: 250,
+        maxDailyDoseMg: 250,
+        duration: "Continuous",
+        notes: "Convenient once-daily dosing."
+      },
+      {
+        antibioticId: "erythromycin",
+        type: "alternative",
+        label: "Erythromycin Ethylsuccinate PO (Penicillin Allergy)",
+        route: "Oral (PO)",
+        doseText: "< 5 years: 125 mg PO q12h; ≥ 5 years: 250 mg PO q12h",
+        minDosePerKgDay: 125,
+        maxDosePerKgDay: 250,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 250,
+        maxDailyDoseMg: 500,
+        duration: "Continuous",
+        notes: "For patients with penicillin hypersensitivity."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 9. SKIN & SOFT TISSUE INFECTIONS (B11 & C6)
+  // =========================================================================
+  {
+    id: "skin_abscess_furuncles",
+    name: "Skin Abscess / Furuncle / Carbuncle",
+    category: "Skin & Soft Tissue",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Staphylococcus aureus (MSSA / CA-MRSA)",
+    comments: "INCISION & DRAINAGE is primary definitive treatment! Antibiotics are indicated if: surrounding cellulitis > 2cm, systemic symptoms (fever, tachycardia), multiple abscesses, age < 6 months, or immunosuppression.",
+    antibiotics: [
+      {
+        antibioticId: "cloxacillin",
+        type: "first_line",
+        label: "Cloxacillin PO/IV (First-Line MSSA)",
+        route: "Oral (PO) / IV",
+        doseText: "Mild (PO): 50-100 mg/kg/day q6h (max. 2g/day); Severe (IV): 200 mg/kg/day q6h (max. 12g/day) for 5-7 days",
+        minDosePerKgDay: 50,
+        maxDosePerKgDay: 100,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 2000,
+        duration: "5 - 7 days",
+        notes: "Take oral formulation 1 hour before food."
+      },
+      {
+        antibioticId: "cephalexin",
+        type: "first_line",
+        label: "Cephalexin PO (First-Line Oral Alternative - Pleasant Taste)",
+        route: "Oral (PO)",
+        doseText: "25 - 50 mg/kg/day PO in 2 to 4 divided doses (max. 500mg/dose, 2g/day) for 5-7 days",
+        minDosePerKgDay: 25,
+        maxDosePerKgDay: 50,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 2000,
+        duration: "5 - 7 days",
+        notes: "Excellent compliance in children."
+      },
+      {
+        antibioticId: "clindamycin",
+        type: "alternative",
+        label: "Clindamycin PO (Suspected CA-MRSA / Penicillin Allergy)",
+        route: "Oral (PO)",
+        doseText: "20 - 30 mg/kg/day PO in 3 divided doses (max. 450mg/dose, 1.8g/day) for 5-7 days",
+        minDosePerKgDay: 20,
+        maxDosePerKgDay: 30,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 450,
+        maxDailyDoseMg: 1800,
+        duration: "5 - 7 days",
+        notes: "Covers MRSA and suppresses Panton-Valentine leukocidin (PVL) toxin production."
+      }
+    ]
+  },
+  {
+    id: "impetigo_cellulitis_mild",
+    name: "Skin & Soft Tissue: Impetigo / Erysipelas / Mild Cellulitis",
+    category: "Skin & Soft Tissue",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Staphylococcus aureus, Streptococcus pyogenes (GAS)",
+    comments: "For localized non-bullous impetigo, crust removal and topical mupirocin 2% or fusidic acid is effective. If widespread, bullous impetigo, or cellulitis, start oral anti-staphylococcal therapy.",
+    antibiotics: [
+      {
+        antibioticId: "cephalexin",
+        type: "first_line",
+        label: "Cephalexin PO (First-Line Oral)",
+        route: "Oral (PO)",
+        doseText: "25 - 50 mg/kg/day PO in 2 to 4 divided doses (max. 500mg/dose, 2g/day) for 5-7 days",
+        minDosePerKgDay: 25,
+        maxDosePerKgDay: 50,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 2000,
+        duration: "5 - 7 days",
+        notes: "Pleasant suspension taste; superior adherence."
+      },
+      {
+        antibioticId: "cloxacillin",
+        type: "first_line",
+        label: "Cloxacillin PO (Oral Anti-Staphylococcal)",
+        route: "Oral (PO)",
+        doseText: "50 - 100 mg/kg/day PO in 4 divided doses (max. 500mg/dose, 2g/day) 1 hour before food",
+        minDosePerKgDay: 50,
+        maxDosePerKgDay: 100,
+        dividedDoses: 4,
+        frequency: "q6h (1h before food)",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 2000,
+        duration: "5 - 7 days",
+        notes: "Must take on empty stomach."
+      },
+      {
+        antibioticId: "amoxicillin_clavulanate",
+        type: "second_line",
+        label: "Amoxicillin/Clavulanate PO (Augmentin 7:1)",
+        route: "Oral (PO)",
+        doseText: "40 - 50 mg/kg/day (amoxicillin) PO in 2 divided doses (max. 2g/day)",
+        minDosePerKgDay: 40,
+        maxDosePerKgDay: 50,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "5 - 7 days",
+        notes: "Second-line for infected eczema or mixed wound infections."
+      },
+      {
+        antibioticId: "clindamycin",
+        type: "alternative",
+        label: "Clindamycin PO (Severe Penicillin Allergy)",
+        route: "Oral (PO)",
+        doseText: "20 - 30 mg/kg/day PO in 3 divided doses (max. 450mg/dose, 1.8g/day)",
+        minDosePerKgDay: 20,
+        maxDosePerKgDay: 30,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 450,
+        maxDailyDoseMg: 1800,
+        duration: "5 - 7 days",
+        notes: "Alternative for beta-lactam allergic children."
+      }
+    ]
+  },
+  {
+    id: "animal_human_bites",
+    name: "Animal / Human Bite Wounds",
+    category: "Skin & Soft Tissue",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Pasteurella multocida (cats/dogs), Eikenella corrodens (human), S. aureus, Anaerobes",
+    comments: "Copious wound irrigation with normal saline is mandatory. Do NOT suture puncture bite wounds! Tetanus prophylaxis assessment required.",
+    antibiotics: [
+      {
+        antibioticId: "amoxicillin_clavulanate",
+        type: "first_line",
+        label: "Amoxicillin/Clavulanate PO (Augmentin 7:1) (Drug of Choice)",
+        route: "Oral (PO)",
+        doseText: "40 - 50 mg/kg/day (amoxicillin component) PO in 2 divided doses (max. 2g/day) for 5-7 days",
+        minDosePerKgDay: 40,
+        maxDosePerKgDay: 50,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "5 - 7 days",
+        notes: "Gold standard bite coverage: covers Pasteurella, Eikenella, MSSA, and oral anaerobes."
+      },
+      {
+        antibioticId: "cotrimoxazole",
+        type: "alternative",
+        label: "Co-trimoxazole PO PLUS Metronidazole PO (Penicillin Allergy)",
+        route: "Oral (PO)",
+        doseText: "Cotrimoxazole 8-10 mg TMP/kg/day q12h + Metronidazole 30 mg/kg/day q8h for 5-7 days",
+        minDosePerKgDay: 8,
+        maxDosePerKgDay: 10,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 160,
+        maxDailyDoseMg: 320,
+        duration: "5 - 7 days",
+        notes: "Pasteurella coverage with Cotrimoxazole plus anaerobic coverage with Metronidazole."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 10. NEONATAL INFECTIONS (B6)
+  // =========================================================================
+  {
+    id: "neonatal_early_onset_sepsis",
+    name: "Neonatal Early-Onset Sepsis / Meningitis (≤ 7 days of life)",
+    category: "Neonatal",
+    ageSuitability: "Neonate 0 - 7 days of life",
+    commonOrganisms: "Group B Streptococcus (GBS), Escherichia coli, Listeria monocytogenes, Enterococcus",
+    comments: "Empiric combination therapy with Ampicillin + Aminoglycoside (Gentamicin) or Cefotaxime. Adjust Gentamicin dosing interval by gestational age (GA/CGA)!",
+    antibiotics: [
+      {
+        antibioticId: "ampicillin",
+        type: "first_line",
+        label: "Ampicillin IV (Neonatal Sepsis)",
+        route: "Intravenous (IV)",
+        doseText: "100 - 150 mg/kg/day IV in 2 divided doses (q12h if ≤7 days; if meningitis: 200-300 mg/kg/day in 3 divided doses)",
+        minDosePerKgDay: 100,
+        maxDosePerKgDay: 150,
+        dividedDoses: 2,
+        frequency: "q12h (for PNA ≤ 7 days)",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "7 - 10 days",
+        notes: "For meningitis, increase to 200-300 mg/kg/day divided q12h (≤7 days) or q8h (>7 days)."
+      },
+      {
+        antibioticId: "gentamicin",
+        type: "first_line",
+        label: "Gentamicin IV (Neonatal Gestational-Age Regimen)",
+        route: "Intravenous (IV)",
+        doseText: "5 mg/kg/dose IV. Frequency: <30w CGA: q48h; 30-34w CGA: q36h; ≥35w CGA: q24h",
+        minDosePerKgDay: 5,
+        maxDosePerKgDay: 5,
+        perDose: true,
+        frequency: "Stratified by Gestational Age (<30w: q48h, 30-34w: q36h, ≥35w: q24h)",
+        maxSingleDoseMg: 200,
+        maxDailyDoseMg: 200,
+        duration: "5 - 7 days",
+        notes: "NAG 2024 CGA protocol. Monitor serum trough level (<1-2 mcg/mL) and peak level (5-10 mcg/mL)."
+      },
+      {
+        antibioticId: "cefotaxime",
+        type: "second_line",
+        label: "Cefotaxime IV (Alternative to Gentamicin or if Meningitis proven)",
+        route: "Intravenous (IV)",
+        doseText: "50 mg/kg/dose IV. Frequency: ≤7 days PNA: q12h; >7 days PNA: q6h-q8h (max. 200mg/kg/day)",
+        minDosePerKgDay: 100,
+        maxDosePerKgDay: 100,
+        perDose: true,
+        frequency: "q12h (if PNA ≤7 days)",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "14 - 21 days for meningitis",
+        notes: "Safe in neonates; does not displace bilirubin from albumin."
+      }
+    ]
+  },
+  {
+    id: "neonatal_necrotising_enterocolitis",
+    name: "Neonatal Necrotising Enterocolitis (NEC - Stage 1 to 3)",
+    category: "Neonatal",
+    ageSuitability: "Neonate (Preterm & Term)",
+    commonOrganisms: "Klebsiella spp., E. coli, Clostridia, CoNS, Enterococci, Bacteroides spp.",
+    comments: "Bowel rest, NPO, gastric decompression, fluid resuscitation and prompt triple broad-spectrum coverage.",
+    antibiotics: [
+      {
+        antibioticId: "ampicillin",
+        type: "first_line",
+        label: "Ampicillin IV (Stage 1 NEC)",
+        route: "Intravenous (IV)",
+        doseText: "100 mg/kg/dose IV. Frequency: ≤1 week of age: q12h; >1 week of age: q8h",
+        minDosePerKgDay: 200,
+        maxDosePerKgDay: 200,
+        perDose: true,
+        frequency: "q12h (≤7 days) or q8h (>7 days)",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 3000,
+        duration: "10 - 14 days",
+        notes: "Combine with Gentamicin + Metronidazole for Stage 1."
+      },
+      {
+        antibioticId: "gentamicin",
+        type: "first_line",
+        label: "Gentamicin IV (NEC Stage 1)",
+        route: "Intravenous (IV)",
+        doseText: "5 mg/kg/dose IV (<30w CGA: q48h; 30-34w CGA: q36h; ≥35w CGA: q24h)",
+        minDosePerKgDay: 5,
+        maxDosePerKgDay: 5,
+        perDose: true,
+        frequency: "<30w: q48h; 30-34w: q36h; ≥35w: q24h",
+        maxSingleDoseMg: 200,
+        maxDailyDoseMg: 200,
+        duration: "10 - 14 days",
+        notes: "Can substitute with Amikacin 15mg/kg/dose if local Gram-negative resistance is high."
+      },
+      {
+        antibioticId: "metronidazole",
+        type: "first_line",
+        label: "Metronidazole IV (Anaerobic Coverage for NEC)",
+        route: "Intravenous (IV)",
+        doseText: "Loading: 15 mg/kg IV once. Maintenance: ≤34w: 7.5 mg/kg q12h; 35-40w: 7.5 mg/kg q8h; >40w: 10 mg/kg q8h",
+        minDosePerKgDay: 15,
+        maxDosePerKgDay: 22.5,
+        perDose: true,
+        frequency: "≤34w: q12h; 35-40w: q8h; >40w: q8h",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 1500,
+        duration: "10 - 14 days",
+        notes: "Crucial anaerobic gut flora coverage for bowel wall ischemia/necrosis."
+      },
+      {
+        antibioticId: "cefotaxime",
+        type: "second_line",
+        label: "Cefotaxime IV (NEC Stage 2 / Stage 3 - In place of Amp+Gent)",
+        route: "Intravenous (IV)",
+        doseText: "50 mg/kg/dose IV. Frequency: ≤1 week of age: q12h; >1 week of age: q8h (PLUS Metronidazole)",
+        minDosePerKgDay: 100,
+        maxDosePerKgDay: 150,
+        perDose: true,
+        frequency: "q12h (≤7 days) or q8h (>7 days)",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 3000,
+        duration: "10 - 14 days",
+        notes: "Preferred for established pneumatosis intestinalis or perforation."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 11. IMMUNOCOMPROMISED & ONCOLOGY (B5)
+  // =========================================================================
+  {
+    id: "febrile_neutropenia_paediatric",
+    name: "Febrile Neutropenia (Paediatric Oncology / Haematology)",
+    category: "Immunocompromised",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Pseudomonas aeruginosa, Enterobacteriaceae (Klebsiella, E. coli), Staphylococci, Streptococci",
+    comments: "MEDICAL EMERGENCY! Defined as single oral temp ≥ 38.3°C (or ≥ 38.0°C over 1 hour) with absolute neutrophil count (ANC) < 500/mm³. Administer broad-spectrum antipseudomonal monotherapy within 60 minutes of arrival.",
+    antibiotics: [
+      {
+        antibioticId: "cefepime",
+        type: "first_line",
+        label: "Cefepime IV (First-Line Monotherapy)",
+        route: "Intravenous (IV)",
+        doseText: "50 mg/kg/dose IV q8h (max. 2g/dose, 6g/day)",
+        minDosePerKgDay: 150,
+        maxDosePerKgDay: 150,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 6000,
+        duration: "Until afebrile for 48h and ANC > 500/mm³",
+        notes: "Fourth generation cephalosporin with excellent Pseudomonas and Gram-negative coverage."
+      },
+      {
+        antibioticId: "piperacillin_tazobactam",
+        type: "first_line",
+        label: "Piperacillin/Tazobactam IV (Tazocin) (Alternative First-Line)",
+        route: "Intravenous (IV)",
+        doseText: "300 - 400 mg/kg/day IV in 4 divided doses (max. 4.5g/dose, 16g/day)",
+        minDosePerKgDay: 300,
+        maxDosePerKgDay: 400,
+        dividedDoses: 4,
+        frequency: "q6h (extended infusion over 3-4h preferred)",
+        maxSingleDoseMg: 4500,
+        maxDailyDoseMg: 16000,
+        duration: "Until afebrile and ANC recovering",
+        notes: "Provides broad anaerobic and antipseudomonal coverage."
+      },
+      {
+        antibioticId: "meropenem",
+        type: "second_line",
+        label: "Meropenem IV (Septic Shock / Persistent Fever / ESBL)",
+        route: "Intravenous (IV)",
+        doseText: "60 - 120 mg/kg/day IV in 3 divided doses (max. 2g/dose, 6g/day)",
+        minDosePerKgDay: 60,
+        maxDosePerKgDay: 120,
+        dividedDoses: 3,
+        frequency: "q8h (extended infusion over 3 hours)",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 6000,
+        duration: "Individualized",
+        notes: "Step up for clinical deterioration, hemodynamic shock, or ESBL risk."
+      },
+      {
+        antibioticId: "vancomycin",
+        type: "second_line",
+        label: "Vancomycin IV (Add if Catheter Infection / Shock / Mucositis)",
+        route: "Intravenous (IV)",
+        doseText: "45 - 60 mg/kg/day IV in 3 to 4 divided doses (max. 2g/day). Target trough 15 - 20 mcg/mL.",
+        minDosePerKgDay: 45,
+        maxDosePerKgDay: 60,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "Target trough: 15-20 mcg/mL",
+        notes: "Do not add empiric vancomycin routinely unless specific high-risk criteria met (catheter exit-site infection, hemodynamic instability, severe mucositis)."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 12. OCULAR INFECTIONS (B7)
+  // =========================================================================
+  {
+    id: "preseptal_orbital_cellulitis",
+    name: "Preseptal & Orbital Cellulitis",
+    category: "Ocular Infections",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Streptococcus pneumoniae, Staphylococcus aureus, Streptococcus pyogenes, H. influenzae",
+    comments: "CRITICAL DISTINCTION: Orbital cellulitis involves proptosis, ophthalmoplegia, reduced vision, or pain with eye movement. Urgent contrast CT orbit/paranasal sinuses and emergency ENT/Ophthalmology review! Preseptal has normal visual acuity and painless ocular motility.",
+    antibiotics: [
+      {
+        antibioticId: "amoxicillin_clavulanate",
+        type: "first_line",
+        label: "Amoxicillin/Clavulanate PO (Augmentin 7:1) (Mild Preseptal Cellulitis Only)",
+        route: "Oral (PO)",
+        doseText: "40 - 50 mg/kg/day (amoxicillin) PO in 2 divided doses (max. 2g/day) for 7-10 days",
+        minDosePerKgDay: 40,
+        maxDosePerKgDay: 50,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "7 - 10 days",
+        notes: "Only for mild preseptal cellulitis in reliable family without orbital signs."
+      },
+      {
+        antibioticId: "cefotaxime",
+        type: "first_line",
+        label: "Cefotaxime IV PLUS Cloxacillin IV (Orbital / Severe Preseptal)",
+        route: "Intravenous (IV)",
+        doseText: "Cefotaxime 150-200 mg/kg/day IV q6h + Cloxacillin 100-200 mg/kg/day IV q6h (max. 8g each)",
+        minDosePerKgDay: 150,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "10 - 14 days total",
+        notes: "Standard parenteral combination covering pneumococcus, H. influenzae, and MSSA."
+      },
+      {
+        antibioticId: "vancomycin",
+        type: "second_line",
+        label: "Vancomycin IV (Add if MRSA / Subperiosteal Abscess / Intracranial Spread)",
+        route: "Intravenous (IV)",
+        doseText: "45 - 60 mg/kg/day IV in 4 divided doses (max. 2g/day). Target trough 15 - 20 mcg/mL.",
+        minDosePerKgDay: 45,
+        maxDosePerKgDay: 60,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "2 - 3 weeks",
+        notes: "Target trough: 15-20 mcg/mL."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 13. TROPICAL INFECTIONS (B12)
+  // =========================================================================
+  {
+    id: "melioidosis_paediatric",
+    name: "Melioidosis (Burkholderia pseudomallei) (Updated Jan '26)",
+    category: "Tropical Infections",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Burkholderia pseudomallei",
+    comments: "Two-phase therapy: Intensive IV phase (minimum 10-14 days; longer if deep organ abscesses or neuromelioidosis) followed by Eradication oral phase (minimum 12 weeks with Cotrimoxazole).",
+    antibiotics: [
+      {
+        antibioticId: "ceftazidime",
+        type: "first_line",
+        label: "Ceftazidime IV (Intensive Phase - First Line)",
+        route: "Intravenous (IV)",
+        doseText: "150 - 200 mg/kg/day IV in 3 to 4 divided doses (max. 2g/dose, 6g/day)",
+        minDosePerKgDay: 150,
+        maxDosePerKgDay: 200,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 6000,
+        duration: "10 - 14 days (intensive)",
+        notes: "Intensive phase. Infuse over 30-60 minutes."
+      },
+      {
+        antibioticId: "meropenem",
+        type: "second_line",
+        label: "Meropenem IV (Intensive Phase - Severe Sepsis / Neuromelioidosis)",
+        route: "Intravenous (IV)",
+        doseText: "75 - 120 mg/kg/day IV in 3 divided doses (max. 2g/dose, 6g/day)",
+        minDosePerKgDay: 75,
+        maxDosePerKgDay: 120,
+        dividedDoses: 3,
+        frequency: "q8h (extended infusion over 3h preferred)",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 6000,
+        duration: "14 - 28 days",
+        notes: "Preferred in septic shock or neuromelioidosis."
+      },
+      {
+        antibioticId: "cotrimoxazole",
+        type: "first_line",
+        label: "Co-trimoxazole (Bactrim) PO (Eradication Phase)",
+        route: "Oral (PO)",
+        doseText: "8 - 10 mg TMP/kg/day PO in 2 divided doses with Folic Acid supplement (5mg/day)",
+        minDosePerKgDay: 8,
+        maxDosePerKgDay: 10,
+        dividedDoses: 2,
+        frequency: "q12h",
+        maxSingleDoseMg: 320,
+        maxDailyDoseMg: 640,
+        duration: "12 - 20 weeks",
+        notes: "Eradication phase to prevent relapse. Co-prescribe Folic acid 5mg daily. Monitor FBC and renal profile."
+      }
+    ]
+  },
+  {
+    id: "leptospirosis_paediatric",
+    name: "Leptospirosis (Weil's Disease)",
+    category: "Tropical Infections",
+    ageSuitability: "All paediatric ages",
+    commonOrganisms: "Leptospira interrogans",
+    comments: "History of freshwater exposure, flooding, or rodent contact. Biphasic illness (leptospiraemic phase then immune phase). Jarisch-Herxheimer reaction may occur within hours of antibiotic initiation.",
+    antibiotics: [
+      {
+        antibioticId: "benzylpenicillin",
+        type: "first_line",
+        label: "Benzylpenicillin (Penicillin G) IV (Severe / Inpatient)",
+        route: "Intravenous (IV)",
+        doseText: "200,000 - 400,000 units/kg/day IV in 4 to 6 divided doses (max. 24 million units/day) for 7 days",
+        minDosePerKgDay: 200000,
+        maxDosePerKgDay: 400000,
+        unit: "units",
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 6000000,
+        maxDailyDoseMg: 24000000,
+        duration: "7 days",
+        notes: "First-line parenteral therapy for moderate to severe leptospirosis."
+      },
+      {
+        antibioticId: "ceftriaxone",
+        type: "first_line",
+        label: "Ceftriaxone IV (Alternative Parenteral)",
+        route: "Intravenous (IV)",
+        doseText: "80 - 100 mg/kg/day IV once daily (max. 2g/day) for 7 days",
+        minDosePerKgDay: 80,
+        maxDosePerKgDay: 100,
+        dividedDoses: 1,
+        frequency: "q24h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 2000,
+        duration: "7 days",
+        notes: "Convenient once-daily dosing with equal clinical efficacy."
+      },
+      {
+        antibioticId: "amoxicillin",
+        type: "second_line",
+        label: "Amoxicillin PO (Mild Leptospirosis)",
+        route: "Oral (PO)",
+        doseText: "50 mg/kg/day PO in 3 divided doses (max. 500mg/dose, 1.5g/day) for 7 days",
+        minDosePerKgDay: 50,
+        maxDosePerKgDay: 50,
+        dividedDoses: 3,
+        frequency: "q8h",
+        maxSingleDoseMg: 500,
+        maxDailyDoseMg: 1500,
+        duration: "7 days",
+        notes: "For mild anicteric leptospirosis tolerating oral fluids."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // 14. VASCULAR INFECTIONS & SEPSIS (B14 & Sepsis)
+  // =========================================================================
+  {
+    id: "crbsi_catheter_infection",
+    name: "Catheter-Related Bloodstream Infection (CRBSI)",
+    category: "Vascular Infections",
+    ageSuitability: "All paediatric ages with central line / PICC / Port-a-cath",
+    commonOrganisms: "CoNS (S. epidermidis), Staphylococcus aureus, Klebsiella, Enterobacter, Candida",
+    comments: "Take paired blood cultures: one from catheter hub and one from peripheral vein (differential time to positivity >2h indicates catheter source). Consider catheter removal for S. aureus, Candida, or refractory bacteremia.",
+    antibiotics: [
+      {
+        antibioticId: "vancomycin",
+        type: "first_line",
+        label: "Vancomycin IV (First-Line Empiric for CoNS & MRSA)",
+        route: "Intravenous (IV)",
+        doseText: "45 - 60 mg/kg/day IV in 3 to 4 divided doses (max. 2g/day). Target trough 15 - 20 mcg/mL.",
+        minDosePerKgDay: 45,
+        maxDosePerKgDay: 60,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "10 - 14 days",
+        notes: "Mandatory TDM. Trough target 15-20 mcg/mL."
+      },
+      {
+        antibioticId: "cefotaxime",
+        type: "first_line",
+        label: "Cefotaxime IV (Add for Gram-Negative Bacilli Coverage)",
+        route: "Intravenous (IV)",
+        doseText: "150 - 200 mg/kg/day IV in 3 to 4 divided doses (max. 2g/dose, 8g/day)",
+        minDosePerKgDay: 150,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "10 - 14 days",
+        notes: "Combine with Vancomycin for broad initial empiric coverage in sick children."
+      },
+      {
+        antibioticId: "cloxacillin",
+        type: "second_line",
+        label: "Cloxacillin IV (Switch if MSCoNS or MSSA confirmed on blood culture)",
+        route: "Intravenous (IV)",
+        doseText: "100 - 200 mg/kg/day IV in 4 divided doses (max. 2g/dose, 8g/day)",
+        minDosePerKgDay: 100,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "14 days",
+        notes: "De-escalate from vancomycin once susceptibility confirms methicillin sensitivity."
+      }
+    ]
+  },
+  {
+    id: "paediatric_septic_shock",
+    name: "Paediatric Sepsis & Septic Shock (Community-Acquired)",
+    category: "Sepsis & Critical Care",
+    ageSuitability: "≥ 1 month to 18 years",
+    commonOrganisms: "Neisseria meningitidis, Streptococcus pneumoniae, Staphylococcus aureus, Group A Streptococcus, Enterobacterales",
+    comments: "CRITICAL: Administer empiric intravenous antibiotics within the first hour of recognition ('Golden Hour'). Take blood cultures before starting antibiotics without delaying infusion.",
+    antibiotics: [
+      {
+        antibioticId: "cefotaxime",
+        type: "first_line",
+        label: "Cefotaxime IV (Preferred First Line Sepsis)",
+        route: "Intravenous (IV)",
+        doseText: "150 - 200 mg/kg/day IV in 3 to 4 divided doses (max. 2g/dose, 8g/day)",
+        minDosePerKgDay: 150,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "7 - 14 days",
+        notes: "Third-generation cephalosporin covering encapsulated organisms and GNB."
+      },
+      {
+        antibioticId: "ceftriaxone",
+        type: "first_line",
+        label: "Ceftriaxone IV (Alternative Sepsis First Line)",
+        route: "Intravenous (IV)",
+        doseText: "80 - 100 mg/kg/day IV in 1 to 2 divided doses (max. 2g/dose, 4g/day)",
+        minDosePerKgDay: 80,
+        maxDosePerKgDay: 100,
+        dividedDoses: 2,
+        frequency: "q12h or q24h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 4000,
+        duration: "7 - 14 days",
+        notes: "Convenient once or twice daily infusion. Avoid calcium co-administration."
+      },
+      {
+        antibioticId: "cloxacillin",
+        type: "first_line",
+        label: "Cloxacillin IV (Add for Staphylococcal toxic shock or purpura)",
+        route: "Intravenous (IV)",
+        doseText: "100 - 200 mg/kg/day IV in 4 divided doses (max. 2g/dose, 8g/day)",
+        minDosePerKgDay: 100,
+        maxDosePerKgDay: 200,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 2000,
+        maxDailyDoseMg: 8000,
+        duration: "7 - 14 days",
+        notes: "Add if staphylococcal sepsis or toxic shock syndrome suspected."
+      },
+      {
+        antibioticId: "gentamicin",
+        type: "second_line",
+        label: "Gentamicin IV (Add for synergistic Gram-negative coverage in shock)",
+        route: "Intravenous (IV)",
+        doseText: "7.5 mg/kg/dose IV once daily (q24h) (max. 400mg/day). Monitor trough level.",
+        minDosePerKgDay: 7.5,
+        maxDosePerKgDay: 7.5,
+        perDose: true,
+        frequency: "q24h (Once daily)",
+        maxSingleDoseMg: 400,
+        maxDailyDoseMg: 400,
+        duration: "3 - 5 days",
+        notes: "Once daily extended interval dosing for synergy. Trough target < 1 mcg/mL."
+      },
+      {
+        antibioticId: "vancomycin",
+        type: "second_line",
+        label: "Vancomycin IV (Add if MRSA risk or central line sepsis)",
+        route: "Intravenous (IV)",
+        doseText: "45 - 60 mg/kg/day IV in 3 to 4 divided doses (max. 2g/day). Target trough 15 - 20 mcg/mL.",
+        minDosePerKgDay: 45,
+        maxDosePerKgDay: 60,
+        dividedDoses: 4,
+        frequency: "q6h",
+        maxSingleDoseMg: 1000,
+        maxDailyDoseMg: 2000,
+        duration: "7 - 14 days",
+        notes: "Target trough: 15-20 mcg/mL."
+      }
+    ]
+  }
+];
+
+// Write updated conditions.json
+const condPath = path.join(__dirname, 'public', 'data', 'conditions.json');
+fs.writeFileSync(condPath, JSON.stringify(conditions, null, 2));
+
+console.log('----------------------------------------------------');
+console.log(`✅ Successfully compiled ALL conditions: ${conditions.length} total conditions!`);
+console.log('Categories covered:');
+const cats = {};
+conditions.forEach(c => cats[c.category] = (cats[c.category] || 0) + 1);
+for (const [k, v] of Object.entries(cats)) {
+  console.log(`  - ${k}: ${v} condition(s)`);
+}
+console.log('----------------------------------------------------');
