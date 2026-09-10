@@ -1,0 +1,11 @@
+{
+  "name": "nag-pediatric-antibiotics-toolkit",
+  "version": "1.0.0",
+  "description": "NAG 2024 Antibiotics Toolkit & Paediatric Dosing Calculator with Live MOH Update Tracking. Created by fathirosli.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "faithx",
+  "license": "MIT"
+}

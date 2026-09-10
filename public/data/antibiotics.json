@@ -1,0 +1,693 @@
+[
+  {
+    "id": "amoxicillin",
+    "name": "Amoxicillin",
+    "class": "Aminopenicillin",
+    "aware": "Access",
+    "routes": [
+      "PO"
+    ],
+    "formulations": [
+      {
+        "name": "Amoxicillin Suspension 125 mg / 5 mL",
+        "mgPerMl": 25
+      },
+      {
+        "name": "Amoxicillin Suspension 250 mg / 5 mL",
+        "mgPerMl": 50
+      },
+      {
+        "name": "Amoxicillin Capsule 250 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Amoxicillin Capsule 500 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      }
+    ],
+    "maxDailyDoseAdult": "3000 mg/day",
+    "maxSingleDoseAdult": "1000 mg/dose",
+    "renalAdjustment": "CrCl 10-30 mL/min: q12h; CrCl < 10 mL/min: q24h",
+    "safetyWarnings": "Report skin rash. If rash appears with infectious mononucleosis (EBV), likely non-allergic maculopapular eruption."
+  },
+  {
+    "id": "amoxicillin_clavulanate",
+    "name": "Amoxicillin / Clavulanate (Augmentin)",
+    "class": "Beta-lactamase inhibitor combination",
+    "aware": "Access",
+    "routes": [
+      "PO",
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Augmentin Suspension 228 mg / 5 mL (7:1 - Amox 200mg + Clav 28.5mg)",
+        "mgPerMl": 40,
+        "activeComponent": "Amoxicillin"
+      },
+      {
+        "name": "Augmentin Forte Suspension 457 mg / 5 mL (7:1 - Amox 400mg + Clav 57mg)",
+        "mgPerMl": 80,
+        "activeComponent": "Amoxicillin"
+      },
+      {
+        "name": "Augmentin ES-600 Suspension 600 mg / 5 mL (14:1 - Amox 600mg + Clav 42.9mg)",
+        "mgPerMl": 120,
+        "activeComponent": "Amoxicillin"
+      },
+      {
+        "name": "Augmentin Tablet 375 mg (Amox 250mg)",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Augmentin Tablet 625 mg (Amox 500mg)",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Augmentin IV 600 mg Vial",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Augmentin IV 1.2 g Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "2000 mg amoxicillin/day (PO), 4000 mg/day (IV)",
+    "maxSingleDoseAdult": "1000 mg/dose (PO), 2000 mg/dose (IV)",
+    "renalAdjustment": "CrCl 10-30 mL/min: Use 7:1 formulation q12h, avoid 14:1. CrCl < 10 mL/min: q24h.",
+    "safetyWarnings": "Give at start of meals to reduce gastrointestinal upset. Watch for antibiotic-associated diarrhoea and cholestatic jaundice."
+  },
+  {
+    "id": "ampicillin",
+    "name": "Ampicillin",
+    "class": "Aminopenicillin",
+    "aware": "Access",
+    "routes": [
+      "IV",
+      "IM"
+    ],
+    "formulations": [
+      {
+        "name": "Ampicillin 500 mg Vial (Powder for Injection)",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Ampicillin 1000 mg (1 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "12000 mg/day (12 g/day for meningitis)",
+    "maxSingleDoseAdult": "2000 mg/dose",
+    "renalAdjustment": "CrCl 10-50 mL/min: q6h-q12h; CrCl < 10 mL/min: q12h-q24h",
+    "safetyWarnings": "Administer slow IV bolus over 3-5 minutes or infusion over 15-30 minutes."
+  },
+  {
+    "id": "ampicillin_sulbactam",
+    "name": "Ampicillin / Sulbactam (Unasyn)",
+    "class": "Beta-lactamase inhibitor combination",
+    "aware": "Watch",
+    "routes": [
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Ampicillin/Sulbactam 750 mg Vial (Amp 500mg + Sulb 250mg)",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Ampicillin/Sulbactam 1.5 g Vial (Amp 1g + Sulb 500mg)",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "8000 mg ampicillin/day (12 g total)",
+    "maxSingleDoseAdult": "2000 mg ampicillin/dose",
+    "renalAdjustment": "CrCl 15-50 mL/min: q8h-q12h; CrCl < 15 mL/min: q24h",
+    "safetyWarnings": "Doses based on ampicillin component. Infuse over 15 to 30 minutes."
+  },
+  {
+    "id": "benzylpenicillin",
+    "name": "Benzylpenicillin (Penicillin G)",
+    "class": "Natural Penicillin",
+    "aware": "Access",
+    "routes": [
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Penicillin G 1 Mega Unit (600 mg / 1,000,000 units) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Penicillin G 5 Mega Units (3,000 mg / 5,000,000 units) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "24 Million units/day",
+    "maxSingleDoseAdult": "4-6 Million units/dose",
+    "renalAdjustment": "CrCl 10-50 mL/min: 75% of dose q6h; CrCl < 10 mL/min: 50% of dose q8h-q12h",
+    "safetyWarnings": "Risk of neurotoxicity (seizures) and hyperkalaemia with massive IV doses or in renal impairment."
+  },
+  {
+    "id": "phenoxymethylpenicillin",
+    "name": "Phenoxymethylpenicillin (Penicillin V)",
+    "class": "Natural Penicillin",
+    "aware": "Access",
+    "routes": [
+      "PO"
+    ],
+    "formulations": [
+      {
+        "name": "Penicillin V Syrup 125 mg / 5 mL",
+        "mgPerMl": 25
+      },
+      {
+        "name": "Penicillin V Tablet 250 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      }
+    ],
+    "maxDailyDoseAdult": "2000 mg/day",
+    "maxSingleDoseAdult": "500 mg/dose",
+    "renalAdjustment": "CrCl < 10 mL/min: q8h-q12h",
+    "safetyWarnings": "Take on an empty stomach (1 hour before or 2 hours after meals). Complete full 10 days for GAS pharyngitis."
+  },
+  {
+    "id": "cloxacillin",
+    "name": "Cloxacillin",
+    "class": "Isoxazolyl Penicillin (Anti-Staphylococcal)",
+    "aware": "Access",
+    "routes": [
+      "PO",
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Cloxacillin Syrup 125 mg / 5 mL",
+        "mgPerMl": 25
+      },
+      {
+        "name": "Cloxacillin Capsule 250 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Cloxacillin Capsule 500 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Cloxacillin IV 500 mg Vial",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Cloxacillin IV 1000 mg (1 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "2000 mg/day (PO), 8000 mg/day (IV)",
+    "maxSingleDoseAdult": "500 mg/dose (PO), 2000 mg/dose (IV)",
+    "renalAdjustment": "No reduction needed unless severe renal + hepatic failure (max 2g q6h).",
+    "safetyWarnings": "Oral form has poor oral bioavailability and very bitter taste; must give 1 hour before food. IV can cause phlebitis; dilute adequately."
+  },
+  {
+    "id": "cephalexin",
+    "name": "Cephalexin",
+    "class": "First-generation Cephalosporin",
+    "aware": "Access",
+    "routes": [
+      "PO"
+    ],
+    "formulations": [
+      {
+        "name": "Cephalexin Suspension 125 mg / 5 mL",
+        "mgPerMl": 25
+      },
+      {
+        "name": "Cephalexin Suspension 250 mg / 5 mL",
+        "mgPerMl": 50
+      },
+      {
+        "name": "Cephalexin Capsule 250 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Cephalexin Capsule 500 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      }
+    ],
+    "maxDailyDoseAdult": "4000 mg/day",
+    "maxSingleDoseAdult": "1000 mg/dose",
+    "renalAdjustment": "CrCl 10-50 mL/min: q8h-q12h; CrCl < 10 mL/min: q12h-q24h",
+    "safetyWarnings": "Safe alternative in non-severe penicillin allergy (low cross-reactivity with penicillin < 1%)."
+  },
+  {
+    "id": "cefazolin",
+    "name": "Cefazolin",
+    "class": "First-generation Cephalosporin",
+    "aware": "Access",
+    "routes": [
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Cefazolin 1000 mg (1 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "6000 mg/day (6 g/day)",
+    "maxSingleDoseAdult": "2000 mg/dose",
+    "renalAdjustment": "CrCl 35-54 mL/min: q8h; CrCl 11-34 mL/min: 50% dose q12h; CrCl < 10 mL/min: 50% dose q24h",
+    "safetyWarnings": "Workhorse surgical prophylaxis and MSSA parenteral therapy. Infuse over 30 minutes."
+  },
+  {
+    "id": "cefuroxime",
+    "name": "Cefuroxime Axetil / Cefuroxime Sodium",
+    "class": "Second-generation Cephalosporin",
+    "aware": "Watch",
+    "routes": [
+      "PO",
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Cefuroxime Axetil Suspension 125 mg / 5 mL (Zinnat)",
+        "mgPerMl": 25
+      },
+      {
+        "name": "Cefuroxime Tablet 250 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Cefuroxime Tablet 500 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Cefuroxime IV 750 mg Vial",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Cefuroxime IV 1.5 g Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "1000 mg/day (PO), 4500 mg/day (IV)",
+    "maxSingleDoseAdult": "500 mg/dose (PO), 1500 mg/dose (IV)",
+    "renalAdjustment": "CrCl 10-20 mL/min: q12h; CrCl < 10 mL/min: q24h",
+    "safetyWarnings": "Take oral suspension with food to improve absorption and improve palatability. Do not crush tablets."
+  },
+  {
+    "id": "cefotaxime",
+    "name": "Cefotaxime",
+    "class": "Third-generation Cephalosporin",
+    "aware": "Watch",
+    "routes": [
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Cefotaxime 500 mg Vial",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Cefotaxime 1000 mg (1 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Cefotaxime 2000 mg (2 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "12000 mg/day (12 g/day)",
+    "maxSingleDoseAdult": "2000 mg/dose",
+    "renalAdjustment": "CrCl < 20 mL/min: reduce dose by 50% or extend interval to q12h",
+    "safetyWarnings": "Preferred 3rd generation cephalosporin in neonates as it does NOT displace bilirubin and does NOT interact with calcium."
+  },
+  {
+    "id": "ceftriaxone",
+    "name": "Ceftriaxone (Rocephin)",
+    "class": "Third-generation Cephalosporin",
+    "aware": "Watch",
+    "routes": [
+      "IV",
+      "IM"
+    ],
+    "formulations": [
+      {
+        "name": "Ceftriaxone 1000 mg (1 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Ceftriaxone 2000 mg (2 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "4000 mg/day (4 g/day for meningitis)",
+    "maxSingleDoseAdult": "2000 mg/dose",
+    "renalAdjustment": "No dose adjustment required if renal impairment alone. Max 2g/day if combined renal & severe hepatic impairment.",
+    "safetyWarnings": "CONTRAINDICATED in neonates ≤28 days if requiring calcium-containing IV solutions (risk of fatal ceftriaxone-calcium salt precipitation) or in hyperbilirubinaemic neonates (displaces bilirubin from albumin)."
+  },
+  {
+    "id": "ceftazidime",
+    "name": "Ceftazidime (Fortum)",
+    "class": "Third-generation Cephalosporin (Anti-Pseudomonal)",
+    "aware": "Watch",
+    "routes": [
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Ceftazidime 1000 mg (1 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Ceftazidime 2000 mg (2 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "6000 mg/day (6 g/day)",
+    "maxSingleDoseAdult": "2000 mg/dose",
+    "renalAdjustment": "CrCl 31-50 mL/min: 1g q12h; CrCl 16-30 mL/min: 1g q24h; CrCl < 15 mL/min: 500mg q24h-q48h",
+    "safetyWarnings": "Primary choice for intensive phase of Melioidosis and Pseudomonas aeruginosa infections."
+  },
+  {
+    "id": "gentamicin",
+    "name": "Gentamicin",
+    "class": "Aminoglycoside",
+    "aware": "Access",
+    "routes": [
+      "IV",
+      "IM"
+    ],
+    "formulations": [
+      {
+        "name": "Gentamicin Injection 80 mg / 2 mL (40 mg/mL)",
+        "mgPerMl": 40,
+        "isAmpoule": true
+      },
+      {
+        "name": "Gentamicin Paediatric Injection 20 mg / 2 mL (10 mg/mL)",
+        "mgPerMl": 10,
+        "isAmpoule": true
+      }
+    ],
+    "maxDailyDoseAdult": "7 mg/kg/day (extended interval)",
+    "maxSingleDoseAdult": "400-500 mg/dose",
+    "renalAdjustment": "Mandatory TDM & interval extension based on CrCl / trough level.",
+    "safetyWarnings": "NEPHROTOXIC & OTOTOXIC. Always calculate dose using ideal body weight in obese patients. Target trough: < 1 mcg/mL (< 2 mcg/mL in neonates). Target peak: 5-10 mcg/mL (conventional) or 16-24 mcg/mL (once-daily)."
+  },
+  {
+    "id": "amikacin",
+    "name": "Amikacin",
+    "class": "Aminoglycoside",
+    "aware": "Access",
+    "routes": [
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Amikacin Injection 500 mg / 2 mL (250 mg/mL)",
+        "mgPerMl": 250,
+        "isAmpoule": true
+      },
+      {
+        "name": "Amikacin Injection 100 mg / 2 mL (50 mg/mL)",
+        "mgPerMl": 50,
+        "isAmpoule": true
+      }
+    ],
+    "maxDailyDoseAdult": "15 mg/kg/day (max 1.5 g/day)",
+    "maxSingleDoseAdult": "1500 mg/dose",
+    "renalAdjustment": "Mandatory TDM. Extend interval based on renal clearance.",
+    "safetyWarnings": "Nephrotoxic & ototoxic. Target trough: < 5 mcg/mL. Target peak: 20-30 mcg/mL (conventional) or 50-60 mcg/mL (once daily)."
+  },
+  {
+    "id": "azithromycin",
+    "name": "Azithromycin",
+    "class": "Macrolide / Azalide",
+    "aware": "Watch",
+    "routes": [
+      "PO",
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Azithromycin Suspension 200 mg / 5 mL (40 mg/mL)",
+        "mgPerMl": 40
+      },
+      {
+        "name": "Azithromycin Tablet 250 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Azithromycin Tablet 500 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Azithromycin IV 500 mg Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "500 mg/day",
+    "maxSingleDoseAdult": "500 mg/dose",
+    "renalAdjustment": "No dosage adjustment needed for mild-to-moderate impairment. Caution if CrCl < 10 mL/min.",
+    "safetyWarnings": "Take 1 hour before or 2 hours after food for suspension. Caution in prolonged QT interval."
+  },
+  {
+    "id": "erythromycin",
+    "name": "Erythromycin Ethylsuccinate (EES)",
+    "class": "Macrolide",
+    "aware": "Access",
+    "routes": [
+      "PO"
+    ],
+    "formulations": [
+      {
+        "name": "Erythromycin Ethylsuccinate Syrup 200 mg / 5 mL",
+        "mgPerMl": 40
+      },
+      {
+        "name": "Erythromycin Ethylsuccinate Tablet 400 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      }
+    ],
+    "maxDailyDoseAdult": "2000 mg/day (2 g/day)",
+    "maxSingleDoseAdult": "800 mg/dose",
+    "renalAdjustment": "Max 1.5 g/day if CrCl < 10 mL/min.",
+    "safetyWarnings": "Strong CYP3A4 inhibitor (multiple drug interactions). Associated with infantile hypertrophic pyloric stenosis in young infants < 6 weeks."
+  },
+  {
+    "id": "clindamycin",
+    "name": "Clindamycin (Dalacin C)",
+    "class": "Lincosamide",
+    "aware": "Access",
+    "routes": [
+      "PO",
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Clindamycin Capsule 150 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Clindamycin Capsule 300 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Clindamycin Injection 300 mg / 2 mL",
+        "mgPerMl": 150,
+        "isAmpoule": true
+      },
+      {
+        "name": "Clindamycin Injection 600 mg / 4 mL",
+        "mgPerMl": 150,
+        "isAmpoule": true
+      }
+    ],
+    "maxDailyDoseAdult": "1800 mg/day (PO), 2700 mg/day (IV)",
+    "maxSingleDoseAdult": "600 mg/dose (PO), 900 mg/dose (IV)",
+    "renalAdjustment": "No adjustment needed.",
+    "safetyWarnings": "Inhibits bacterial protein synthesis and toxin production. Black box warning for Clostridioides difficile-associated diarrhoea."
+  },
+  {
+    "id": "metronidazole",
+    "name": "Metronidazole (Flagyl)",
+    "class": "Nitroimidazole",
+    "aware": "Access",
+    "routes": [
+      "PO",
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Metronidazole Suspension 200 mg / 5 mL (as benzoate)",
+        "mgPerMl": 40
+      },
+      {
+        "name": "Metronidazole Tablet 200 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Metronidazole Tablet 400 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Metronidazole IV 500 mg / 100 mL Infusion Bottle",
+        "mgPerMl": 5,
+        "isInfusion": true
+      }
+    ],
+    "maxDailyDoseAdult": "1500 mg/day (PO), 1500 mg/day (IV)",
+    "maxSingleDoseAdult": "500 mg/dose",
+    "renalAdjustment": "CrCl < 10 mL/min: reduce dose by 50% or give q12h.",
+    "safetyWarnings": "Disulfiram-like reaction with alcohol. Metallic taste and GI symptoms common. Infuse IV over 30-60 minutes."
+  },
+  {
+    "id": "cotrimoxazole",
+    "name": "Co-trimoxazole (Trimethoprim / Sulfamethoxazole - Bactrim)",
+    "class": "Folate synthesis inhibitor combination",
+    "aware": "Access",
+    "routes": [
+      "PO",
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Cotrimoxazole Paediatric Suspension 240 mg / 5 mL (TMP 40mg + SMX 200mg)",
+        "mgPerMl": 8,
+        "activeComponent": "TMP",
+        "totalMgPerMl": 48
+      },
+      {
+        "name": "Cotrimoxazole Tablet 480 mg (TMP 80mg + SMX 400mg)",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Cotrimoxazole Forte Tablet 960 mg (TMP 160mg + SMX 800mg)",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Cotrimoxazole IV Ampoule 480 mg / 5 mL",
+        "mgPerMl": 16,
+        "isAmpoule": true
+      }
+    ],
+    "maxDailyDoseAdult": "320 mg TMP/day (standard), up to 960 mg TMP/day (PJP / Melioidosis)",
+    "maxSingleDoseAdult": "160 mg TMP/dose",
+    "renalAdjustment": "CrCl 15-30 mL/min: 50% of dose; CrCl < 15 mL/min: Not recommended.",
+    "safetyWarnings": "Doses specified by TMP component. Contraindicated in severe G6PD deficiency and infants < 6 weeks (risk of kernicterus). Maintain adequate hydration to prevent crystalluria."
+  },
+  {
+    "id": "nitrofurantoin",
+    "name": "Nitrofurantoin (Macrodantin)",
+    "class": "Nitrofuran",
+    "aware": "Access",
+    "routes": [
+      "PO"
+    ],
+    "formulations": [
+      {
+        "name": "Nitrofurantoin Capsule 50 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      },
+      {
+        "name": "Nitrofurantoin Capsule 100 mg",
+        "mgPerMl": null,
+        "isTablet": true
+      }
+    ],
+    "maxDailyDoseAdult": "200-400 mg/day",
+    "maxSingleDoseAdult": "100 mg/dose",
+    "renalAdjustment": "CONTRAINDICATED if CrCl < 30 mL/min (ineffective and risk of peripheral neuropathy).",
+    "safetyWarnings": "Only for lower urinary tract infection (cystitis). Contraindicated in G6PD deficiency and near-term pregnancy/neonates (haemolytic anaemia)."
+  },
+  {
+    "id": "meropenem",
+    "name": "Meropenem",
+    "class": "Carbapenem",
+    "aware": "Watch",
+    "routes": [
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Meropenem 500 mg Vial",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Meropenem 1000 mg (1 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "6000 mg/day (6 g/day)",
+    "maxSingleDoseAdult": "2000 mg/dose",
+    "renalAdjustment": "CrCl 26-50 mL/min: standard dose q12h; CrCl 10-25 mL/min: 50% dose q12h; CrCl < 10 mL/min: 50% dose q24h",
+    "safetyWarnings": "Broad-spectrum carbapenem for ESBL organisms, severe intra-abdominal sepsis, and Melioidosis. Lower seizure risk than imipenem. Extended 3-hour infusion recommended in critically ill."
+  },
+  {
+    "id": "vancomycin",
+    "name": "Vancomycin",
+    "class": "Glycopeptide",
+    "aware": "Watch",
+    "routes": [
+      "IV"
+    ],
+    "formulations": [
+      {
+        "name": "Vancomycin 500 mg Vial",
+        "mgPerMl": null,
+        "isVial": true
+      },
+      {
+        "name": "Vancomycin 1000 mg (1 g) Vial",
+        "mgPerMl": null,
+        "isVial": true
+      }
+    ],
+    "maxDailyDoseAdult": "2000 mg/day (higher with TDM guidance)",
+    "maxSingleDoseAdult": "1000-1500 mg/dose",
+    "renalAdjustment": "Mandatory TDM and interval adjustment based on CrCl / AUC:MIC / trough level.",
+    "safetyWarnings": "MANDATORY TDM. Red Man Syndrome with rapid infusion: infuse each 500mg over at least 60 minutes. Monitor renal function and trough level before 4th dose. Trough target: 10-15 mcg/mL (routine), 15-20 mcg/mL (severe/CNS/MRSA pneumonia)."
+  }
+]

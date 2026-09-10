@@ -1,0 +1,67 @@
+{
+  "lastCheckedTime": "2026-09-10T01:14:03.476Z",
+  "latestNagVersion": "NAG 2024 (Revisions up to January 2026)",
+  "officialSourceUrl": "https://sites.google.com/moh.gov.my/nag/information/whats-new",
+  "updates": [
+    {
+      "date": "January 2026",
+      "badge": "Latest",
+      "sections": [
+        {
+          "name": "Paediatric Section",
+          "items": [
+            "Gastrointestinal Infections: Parasitic Infection, Liver Abscess",
+            "Neonatal Infections: Congenital and Perinatal Infections (Meningitis)",
+            "Otorhinolaryngology Infections: Diphtheria management",
+            "Respiratory Infections: Community-acquired pneumonia (Outpatient & Inpatient regimens refined), Empyema Thoracis"
+          ]
+        },
+        {
+          "name": "Adult Section",
+          "items": [
+            "Cardiovascular: Infective Endocarditis - Culture-Negative (Bartonella spp.)",
+            "Chemoprophylaxis: Post Splenectomy vaccination schedule",
+            "Ocular: Bacterial Endophthalmitis (Post-op / Trauma), Endogenous Endophthalmitis",
+            "Respiratory: Severe Community-acquired pneumonia (Inpatient)",
+            "Skin & Soft Tissue: Carbuncles",
+            "Tropical: Melioidosis intensive & eradication phase; Filariasis"
+          ]
+        },
+        {
+          "name": "Clinical Pathways in Primary Care",
+          "items": [
+            "Acute Bronchitis and Pneumonia pathway",
+            "Skin and Soft Tissue Infection",
+            "Urinary Tract Infection in Non-Pregnancy",
+            "Urinary Tract Infection in Pregnancy (Asymptomatic & Symptomatic)"
+          ]
+        }
+      ]
+    },
+    {
+      "date": "December 2025",
+      "badge": "Previous",
+      "sections": [
+        {
+          "name": "Paediatric Section",
+          "items": [
+            "Central Nervous Infections: Neonatal Herpes Simplex Encephalitis",
+            "Chemoprophylaxis: Rheumatic fever secondary prevention, Post-splenectomy, Hib and Meningococcal exposure",
+            "Gastrointestinal: Dysentery, Cholera, Peritonitis, Amoebic & Pyogenic Liver abscess, Acute cholangitis",
+            "Neonatal Infections: Necrotising enterocolitis (NEC) staging & antibiotic choices; Group B Streptococcus (GBS)"
+          ]
+        },
+        {
+          "name": "Adult Section",
+          "items": [
+            "Gastrointestinal: H. pylori eradication protocols, Infectious diarrhoea, Spontaneous bacterial peritonitis",
+            "Obstetrics & Gynaecology: Septic abortion, Endometritis, Mastitis, LSCS infection, Bartholin's Gland Abscess (NEW TOPIC)",
+            "Orthopaedic: Prosthetic Joint Infection (MSSA/MRSA), Diabetic Foot Infections",
+            "Skin & Soft Tissue: Furuncles, Ecthyma gangrenosum, Cellulitis, Bite injuries, MRSA, Bedsores",
+            "Urinary Tract: ABU, Uncomplicated & Complicated UTI, Urosepsis, Prostatitis, Fournier's Gangrene"
+          ]
+        }
+      ]
+    }
+  ]
+}

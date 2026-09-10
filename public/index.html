@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAG 2024 Paediatric Antibiotics Toolkit & Dosing Calculator</title>
+  <meta name="description" content="Clinical Antibiotic Toolkit & Paediatric Dosing Calculator based on MOH Malaysia NAG 2024 with live updates tracking. Created by fathirosli.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0d9488">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-light">
+  <!-- Top Application Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="app-logo-badge">
+          <span class="rx-symbol">Rx</span>
+          <span class="nag-tag">NAG 2024</span>
+        </div>
+        <div class="brand-text">
+          <h1>NAG Paediatric Antibiotics Toolkit & Calculator</h1>
+          <p class="brand-subtitle">
+            Based on MOH Malaysia National Antimicrobial Guideline • <span class="creator-badge">Created by <strong>faithx</strong></span>
+          </p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Live Sync Status Chip -->
+        <button id="liveSyncChip" class="live-sync-chip status-synced" title="Click to view live MOH NAG update status">
+          <span class="pulsing-dot"></span>
+          <span id="syncChipText" class="sync-text">NAG Live: Sync Jan '26</span>
+          <span class="refresh-mini-icon">↻</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="themeToggleBtn" class="icon-btn" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="app-nav">
+      <div class="nav-container">
+        <button class="nav-tab active" data-tab="calculatorTab">
+          <span class="tab-icon">🧮</span>
+          <span class="tab-label">Paediatric Calculator</span>
+        </button>
+        <button class="nav-tab" data-tab="neonatalTab">
+          <span class="tab-icon">👶</span>
+          <span class="tab-label">Neonatal Sub-Calculator</span>
+        </button>
+        <button class="nav-tab" data-tab="guidelinesTab">
+          <span class="tab-icon">📚</span>
+          <span class="tab-label">NAG 2024 Toolkit</span>
+        </button>
+        <button class="nav-tab" data-tab="toolsTab">
+          <span class="tab-icon">⚖️</span>
+          <span class="tab-label">Clinical Tools (eGFR / Allergy)</span>
+        </button>
+        <button class="nav-tab" data-tab="updatesTab">
+          <span class="tab-icon">🔄</span>
+          <span class="tab-label">Live Updates & Sync</span>
+          <span id="updateAlertDot" class="update-badge hidden">NEW</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-main">
+
+    <!-- ============================================================== -->
+    <!-- TAB 1: PAEDIATRIC CALCULATOR (Condition Filtered)               -->
+    <!-- ============================================================== -->
+    <section id="calculatorTab" class="tab-content active">
+      <div class="calculator-layout">
+        
+        <!-- Left Column: Patient Parameters & Selections -->
+        <div class="calc-panel input-panel">
+          <div class="panel-header">
+            <h2>Patient & Clinical Diagnosis</h2>
+            <span class="subtext">Filtered strictly per NAG 2024 protocols</span>
+          </div>
+
+          <form id="calcForm" onsubmit="return false;">
+            <!-- Age Group: Years and Months only -->
+            <div class="form-group-row">
+              <div class="form-group flex-1">
+                <label for="ageYears">Age (Years)</label>
+                <div class="input-with-unit">
+                  <input type="number" id="ageYears" min="0" max="18" value="2" step="1">
+                  <span class="unit-tag">yrs</span>
+                </div>
+              </div>
+              <div class="form-group flex-1">
+                <label for="ageMonths">Age (Months)</label>
+                <div class="input-with-unit">
+                  <input type="number" id="ageMonths" min="0" max="11" value="6" step="1">
+                  <span class="unit-tag">mths</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Weight Input with quick buttons -->
+            <div class="form-group">
+              <div class="label-with-hint">
+                <label for="patientWeight">Patient Weight</label>
+                <span id="estimatedWeightHint" class="hint-text">Est: ~13 kg</span>
+              </div>
+              <div class="input-with-unit weight-input">
+                <input type="number" id="patientWeight" min="1" max="100" value="13.0" step="0.1">
+                <span class="unit-tag">kg</span>
+              </div>
+              <!-- Quick Weight Stepper Buttons -->
+              <div class="quick-weight-tags">
+                <button type="button" class="tag-btn" data-weight="5">5kg</button>
+                <button type="button" class="tag-btn" data-weight="8">8kg</button>
+                <button type="button" class="tag-btn" data-weight="10">10kg</button>
+                <button type="button" class="tag-btn" data-weight="12">12kg</button>
+                <button type="button" class="tag-btn" data-weight="15">15kg</button>
+                <button type="button" class="tag-btn" data-weight="20">20kg</button>
+                <button type="button" class="tag-btn" data-weight="30">30kg</button>
+              </div>
+            </div>
+
+            <hr class="form-divider">
+
+            <!-- Clinical Condition Selection -->
+            <div class="form-group">
+              <label for="conditionSelect">Clinical Condition / Diagnosis</label>
+              <div class="select-wrapper">
+                <select id="conditionSelect">
+                  <option value="" disabled>-- Select Clinical Indication --</option>
+                  <!-- Populated dynamically via JS -->
+                </select>
+              </div>
+              <div id="conditionBadgeContainer" class="condition-meta-badges">
+                <!-- Badges for Organisms, Age range, Category -->
+              </div>
+            </div>
+
+            <!-- Antibiotic Selection: Filtered STRICTLY to chosen condition -->
+            <div class="form-group highlight-box">
+              <div class="label-with-hint">
+                <label for="antibioticSelect">Indicated Antibiotic (Allowed for this Condition)</label>
+                <span id="antibioticLineBadge" class="badge-line badge-first-line">First Line</span>
+              </div>
+              <div class="select-wrapper">
+                <select id="antibioticSelect">
+                  <option value="" disabled>-- Select Antibiotic --</option>
+                  <!-- Filtered list populated dynamically -->
+                </select>
+              </div>
+              <p class="field-tip">
+                <span class="tip-icon">ℹ️</span>
+                <span id="antibioticNoteText">Select condition above to see indicated antibiotics only.</span>
+              </p>
+            </div>
+
+            <!-- Route & MOH Suspension Concentration Formulation -->
+            <div class="form-group" id="formulationSection">
+              <label for="formulationSelect">Available Formulation / Suspension</label>
+              <div class="select-wrapper">
+                <select id="formulationSelect">
+                  <!-- Populated dynamically based on chosen antibiotic -->
+                </select>
+              </div>
+            </div>
+
+            <!-- Custom Dose Override Toggle -->
+            <div class="dose-override-row">
+              <label class="switch-container">
+                <input type="checkbox" id="customDoseToggle">
+                <span class="slider"></span>
+                <span class="switch-label">Adjust mg/kg Target</span>
+              </label>
+              <div id="customDoseInputWrapper" class="custom-dose-wrap hidden">
+                <input type="number" id="customDoseInput" min="1" max="500" step="1">
+                <span class="unit-tag">mg/kg/day</span>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Right Column: Results & Clinical Dosage Card -->
+        <div class="calc-panel result-panel">
+          <div class="panel-header result-header">
+            <div>
+              <h2>Prescription & Dosing Card</h2>
+              <span class="subtext">Real-time computation according to NAG 2024</span>
+            </div>
+            <div id="awareClassificationBadge" class="aware-tag aware-access">
+              WHO AWaRe: ACCESS
+            </div>
+          </div>
+
+          <!-- Major Result Hero -->
+          <div class="dose-hero-card">
+            <div class="hero-top">
+              <span class="hero-label">RECOMMENDED SINGLE DOSE</span>
+              <span id="routeHeroTag" class="route-tag">Oral (PO)</span>
+            </div>
+
+            <!-- Big Numbers Display -->
+            <div class="hero-metric-row">
+              <div class="metric-block">
+                <div class="metric-value-wrap">
+                  <span id="singleDoseMg" class="hero-number">--</span>
+                  <span class="hero-unit">mg</span>
+                </div>
+                <span class="metric-sublabel">Per Dose</span>
+              </div>
+
+              <!-- Suspension Volume Display (if liquid) -->
+              <div id="liquidVolumeBlock" class="metric-block highlight-liquid">
+                <div class="metric-value-wrap">
+                  <span id="singleDoseMl" class="hero-number liquid-number">--</span>
+                  <span class="hero-unit">mL</span>
+                </div>
+                <span id="liquidVolumeSublabel" class="metric-sublabel">Liquid Volume (Per Dose)</span>
+              </div>
+            </div>
+
+            <!-- Frequency and Daily Total -->
+            <div class="hero-footer-grid">
+              <div class="footer-item">
+                <span class="footer-label">Frequency:</span>
+                <strong id="dosingFrequency">--</strong>
+              </div>
+              <div class="footer-item">
+                <span class="footer-label">Total Daily Dose:</span>
+                <strong id="dailyDoseMg">-- mg/day</strong>
+              </div>
+              <div class="footer-item">
+                <span class="footer-label">Duration:</span>
+                <strong id="treatmentDuration">--</strong>
+              </div>
+              <div class="footer-item">
+                <span class="footer-label">Dose Target:</span>
+                <strong id="calculatedMgPerKg">-- mg/kg/day</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dose Cap & Safety Guardrails Alert -->
+          <div id="safetyGuardrailBox" class="alert-box alert-safe">
+            <div class="alert-icon">🛡️</div>
+            <div class="alert-content">
+              <strong id="safetyAlertTitle">Within Pediatric & Adult Safe Range</strong>
+              <p id="safetyAlertDesc">Calculated dose does not exceed standard adult maximum ceiling.</p>
+            </div>
+          </div>
+
+          <!-- WHO Weight-Band Comparison (if available, e.g. Amoxicillin in CAP) -->
+          <div id="whoWeightBandBox" class="who-band-card hidden">
+            <div class="band-header">
+              <span class="band-title">⚡ NAG / WHO Weight-Band Dosing Option</span>
+              <button type="button" id="applyWeightBandBtn" class="btn-text-action">Use This Dose</button>
+            </div>
+            <p id="whoWeightBandText" class="band-body">--</p>
+            <span class="band-note">Endorsed by MOH NAG 2024 to simplify outpatient administration and reduce medication errors.</span>
+          </div>
+
+          <!-- Practical Syringe Measurement Guide -->
+          <div id="syringeGuideCard" class="info-card">
+            <h4>💉 Syringe Measurement & Administration Advice</h4>
+            <div class="syringe-details">
+              <p id="syringeAdviceText">Recommended oral syringe size: <strong>5 mL oral syringe</strong>. Measure to nearest 0.1 mL.</p>
+              <p id="administrationNotes" class="admin-notes">--</p>
+            </div>
+          </div>
+
+          <!-- NAG Clinical Remarks & Red Flags -->
+          <div class="clinical-remarks-card">
+            <h4>📋 NAG 2024 Clinical Pearls & Practice Points</h4>
+            <p id="conditionCommentsText">--</p>
+            <div id="renalWarningWrap" class="renal-warning-wrap">
+              <strong>Renal Adjustment (Appendix 2):</strong>
+              <span id="renalAdjustmentText">--</span>
+            </div>
+          </div>
+
+          <!-- Copy Prescription Button -->
+          <div class="action-footer">
+            <button id="copyPrescriptionBtn" class="btn-primary">
+              📋 Copy Prescription to Clipboard
+            </button>
+            <button id="printPrescriptionBtn" class="btn-secondary">
+              🖨️ Print Dosing Summary
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================================== -->
+    <!-- TAB 2: NEONATAL SUB-CALCULATOR (Gestational & Postnatal Stratified)-->
+    <!-- ============================================================== -->
+    <section id="neonatalTab" class="tab-content">
+      <div class="neonatal-header-card">
+        <div class="neonatal-title-area">
+          <h2>👶 Neonatal Antibiotic Sub-Calculator (NAG 2024 Section B6)</h2>
+          <p>Dedicated pharmacokinetic dosing based on Gestational Age (GA / CGA / PMA) and Postnatal Age (PNA).</p>
+        </div>
+        <div class="neonatal-badge">
+          Age: 0 to 28 Days of Life
+        </div>
+      </div>
+
+      <div class="neonatal-layout">
+        <!-- Neonatal Inputs -->
+        <div class="calc-panel">
+          <div class="panel-header">
+            <h3>Neonatal Parameters</h3>
+          </div>
+
+          <div class="form-group">
+            <label for="neonatalWeight">Birth / Current Weight (kg)</label>
+            <div class="input-with-unit">
+              <input type="number" id="neonatalWeight" min="0.4" max="5.5" value="2.2" step="0.05">
+              <span class="unit-tag">kg</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="neonatalCGA">Corrected Gestational Age (CGA / GA in Weeks)</label>
+            <div class="select-wrapper">
+              <select id="neonatalCGA">
+                <option value="under30">&lt; 30 Weeks CGA (Extreme Preterm)</option>
+                <option value="30to34" selected>30 - 34 Weeks CGA (Preterm)</option>
+                <option value="over35">≥ 35 Weeks CGA (Late Preterm &amp; Term)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="neonatalPNA">Postnatal Age (PNA / Days of Life)</label>
+            <div class="select-wrapper">
+              <select id="neonatalPNA">
+                <option value="early" selected>≤ 7 Days of Life (Early Postnatal)</option>
+                <option value="late">&gt; 7 Days of Life (Late Postnatal)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="neonatalDrugSelect">Select Neonatal Regimen / Antibiotic</label>
+            <div class="select-wrapper">
+              <select id="neonatalDrugSelect">
+                <!-- Populated dynamically via JS -->
+              </select>
+            </div>
+          </div>
+
+          <div class="neonate-guidance-box">
+            <h4>💡 Important Neonatal Safety Reminders</h4>
+            <ul>
+              <li><strong>Avoid Ceftriaxone</strong> in neonates ≤ 28 days (risk of bilirubin displacement and fatal calcium-ceftriaxone precipitation). Use <strong>Cefotaxime</strong> instead.</li>
+              <li>Gentamicin and Amikacin intervals must be strictly lengthened in preterm infants due to low GFR.</li>
+              <li>Always check aminoglycoside trough level prior to subsequent doses.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Neonatal Results -->
+        <div class="calc-panel result-panel">
+          <div class="panel-header">
+            <h3>Calculated Neonatal Regimen</h3>
+          </div>
+
+          <div class="dose-hero-card neonate-hero">
+            <div class="hero-top">
+              <span id="neonatalDrugName" class="hero-label">Gentamicin IV</span>
+              <span class="route-tag">Intravenous (IV)</span>
+            </div>
+
+            <div class="hero-metric-row">
+              <div class="metric-block">
+                <div class="metric-value-wrap">
+                  <span id="neonateSingleDoseMg" class="hero-number">11.0</span>
+                  <span class="hero-unit">mg</span>
+                </div>
+                <span class="metric-sublabel">Calculated Single Dose</span>
+              </div>
+              <div class="metric-block highlight-liquid">
+                <div class="metric-value-wrap">
+                  <span id="neonateSingleDoseMl" class="hero-number liquid-number">0.28</span>
+                  <span class="hero-unit">mL</span>
+                </div>
+                <span class="metric-sublabel">Volume (Paed 10mg/mL Ampoule)</span>
+              </div>
+            </div>
+
+            <div class="hero-footer-grid">
+              <div class="footer-item">
+                <span class="footer-label">Interval / Frequency:</span>
+                <strong id="neonateInterval" class="highlight-text">q36h (every 36 hours)</strong>
+              </div>
+              <div class="footer-item">
+                <span class="footer-label">Base Dosing Formula:</span>
+                <strong id="neonateBaseFormula">5 mg/kg/dose</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- TDM & Target Levels -->
+          <div class="tdm-card">
+            <h4>🔬 Therapeutic Drug Monitoring (TDM) Targets</h4>
+            <p id="neonateTdmText">Trough: &lt; 1.0 - 2.0 mcg/mL | Peak: 5.0 - 10.0 mcg/mL</p>
+          </div>
+
+          <!-- Neonatal Clinical Notes -->
+          <div class="clinical-remarks-card">
+            <h4>📋 NAG Section B6 Clinical Remarks</h4>
+            <p id="neonateClinicalNotes">--</p>
+          </div>
+
+          <button id="copyNeonatePrescriptionBtn" class="btn-primary">
+            📋 Copy Neonatal Prescription Note
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================== -->
+    <!-- TAB 3: NAG 2024 TOOLKIT & GUIDELINES BROWSER                   -->
+    <!-- ============================================================== -->
+    <section id="guidelinesTab" class="tab-content">
+      <div class="guidelines-top-bar">
+        <div class="search-box-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="guidelineSearchInput" placeholder="Search by condition, antibiotic, organism, or keyword (e.g. Sepsis, Meningitis, Amoxicillin, UTI)...">
+        </div>
+        <div class="filter-group">
+          <button class="filter-btn active" data-category="all">All</button>
+          <button class="filter-btn" data-category="Respiratory">Respiratory</button>
+          <button class="filter-btn" data-category="Urinary Tract">UTI</button>
+          <button class="filter-btn" data-category="Central Nervous System">CNS</button>
+          <button class="filter-btn" data-category="Neonatal">Neonatal</button>
+          <button class="filter-btn" data-category="Skin & Soft Tissue">Skin/SSTI</button>
+          <button class="filter-btn" data-category="ENT / Primary Care">ENT / Primary</button>
+          <button class="filter-btn" data-category="Gastrointestinal">GIT</button>
+        </div>
+      </div>
+
+      <!-- Guidelines Grid -->
+      <div id="guidelinesContainer" class="guidelines-card-grid">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+
+    <!-- ============================================================== -->
+    <!-- TAB 4: CLINICAL TOOLS (eGFR / Allergy / IV-Oral Switch)         -->
+    <!-- ============================================================== -->
+    <section id="toolsTab" class="tab-content">
+      <div class="tools-grid">
+        
+        <!-- Tool 1: Schwartz Bedside Paediatric eGFR Calculator -->
+        <div class="tool-card">
+          <div class="tool-header">
+            <h3>📏 Paediatric Bedside Schwartz eGFR Calculator</h3>
+            <span class="tool-badge">Appendix 2</span>
+          </div>
+          <p class="tool-desc">
+            Calculates estimated GFR for infants and children using the revised Bedside Schwartz equation: 
+            <code>eGFR (mL/min/1.73m²) = 36.5 × Height (cm) / Serum Creatinine (µmol/L)</code>
+          </p>
+
+          <div class="tool-form-grid">
+            <div class="form-group">
+              <label for="egfrHeight">Child Height (Length)</label>
+              <div class="input-with-unit">
+                <input type="number" id="egfrHeight" min="30" max="200" value="95" step="0.5">
+                <span class="unit-tag">cm</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="egfrCreatinine">Serum Creatinine</label>
+              <div class="input-with-unit">
+                <input type="number" id="egfrCreatinine" min="10" max="800" value="35" step="1">
+                <span class="unit-tag">µmol/L</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tool-result-box">
+            <span class="tool-res-label">ESTIMATED eGFR</span>
+            <div class="tool-res-val-wrap">
+              <span id="egfrResultNumber" class="tool-res-number">99.1</span>
+              <span class="tool-res-unit">mL/min/1.73m²</span>
+            </div>
+            <span id="egfrStageTag" class="badge-stage stage-normal">Normal / Stage 1 Kidney Function (≥ 90)</span>
+            <p id="egfrDoseAdvice" class="egfr-dose-advice">Standard antibiotic dosing appropriate. No automatic renal dose reduction needed.</p>
+          </div>
+        </div>
+
+        <!-- Tool 2: Penicillin & Beta-Lactam Allergy Pathway -->
+        <div class="tool-card">
+          <div class="tool-header">
+            <h3>🛡️ Penicillin Allergy Decision Guide</h3>
+            <span class="tool-badge">Appendix 3</span>
+          </div>
+          <p class="tool-desc">
+            Based on NAG 2024 Appendix 3: Protocol for evaluating penicillin allergies to safely navigate cephalosporin and carbapenem use.
+          </p>
+
+          <div class="allergy-tree">
+            <div class="allergy-step">
+              <strong>1. Immediate / Severe Type 1 IgE Reaction?</strong>
+              <p>Anaphylaxis, bronchospasm, angioedema, hypotension within 1 hour of dose, or severe cutaneous reactions (SCAR / SJS / TEN / DRESS).</p>
+              <div class="allergy-consequence alert-danger">
+                🚫 <strong>AVOID:</strong> All Penicillins and 1st/2nd Gen Cephalosporins.<br>
+                ✅ <strong>SAFE ALTERNATIVES:</strong> Macrolides (Azithromycin, Erythromycin), Glycopeptides (Vancomycin), Clindamycin, Aminoglycosides, Ciprofloxacin.
+              </div>
+            </div>
+
+            <div class="allergy-step">
+              <strong>2. Non-Severe / Delayed Cutaneous Rash?</strong>
+              <p>Isolated maculopapular rash developing > 72 hours after initiation, without mucosal involvement or systemic symptoms.</p>
+              <div class="allergy-consequence alert-warning">
+                ⚠️ <strong>Cephalosporin Cross-Reactivity is &lt; 1-2%:</strong> 3rd and 4th generation cephalosporins (Cefotaxime, Ceftriaxone, Ceftazidime) and Carbapenems (Meropenem) have different side chains and can generally be safely administered under medical observation.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool 3: IV to Oral Switch Checklist -->
+        <div class="tool-card full-width-card">
+          <div class="tool-header">
+            <h3>🔄 IV to Oral Switch Criteria (Appendix 6)</h3>
+            <span class="tool-badge">Appendix 6</span>
+          </div>
+          <p class="tool-desc">
+            Early conversion from IV to oral therapy reduces cannula-related bloodstream infections, length of stay, and costs. Consider switch when all 4 criteria are fulfilled:
+          </p>
+
+          <div class="switch-criteria-grid">
+            <div class="criteria-card">
+              <span class="criteria-check">✅</span>
+              <strong>1. Clinical Improvement</strong>
+              <p>Patient is hemodynamically stable, vital signs normalizing, resolving tachypnoea and respiratory distress.</p>
+            </div>
+            <div class="criteria-card">
+              <span class="criteria-check">✅</span>
+              <strong>2. Afebrile for 24-48 Hours</strong>
+              <p>Temperature &lt; 38.0°C consistently without requiring frequent antipyretics.</p>
+            </div>
+            <div class="criteria-card">
+              <span class="criteria-check">✅</span>
+              <strong>3. Intact Oral Route</strong>
+              <p>Child is alert, tolerating oral fluids/feeds, and not actively vomiting or with ileus/malabsorption.</p>
+            </div>
+            <div class="criteria-card">
+              <span class="criteria-check">✅</span>
+              <strong>4. Oral Option Available</strong>
+              <p>Suitable oral bioequivalent formulation exists (e.g. Cefuroxime IV → Cefuroxime Axetil PO; Ampicillin IV → Amoxicillin PO; Cloxacillin IV → Cephalexin PO).</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================================== -->
+    <!-- TAB 5: LIVE UPDATES & SYNC MONITOR                             -->
+    <!-- ============================================================== -->
+    <section id="updatesTab" class="tab-content">
+      <div class="updates-header-card">
+        <div class="update-header-left">
+          <h2>🔄 Live NAG Google Site Update Monitor</h2>
+          <p>Directly tracks and verifies revisions published on the official MOH Malaysia Google Site: <a href="https://sites.google.com/moh.gov.my/nag/information/whats-new" target="_blank" rel="noopener">sites.google.com/moh.gov.my/nag/information/whats-new ↗</a></p>
+        </div>
+        <div class="update-header-right">
+          <button id="checkUpdatesManualBtn" class="btn-primary check-now-btn">
+            <span class="spin-icon">↻</span> Check for Live Updates
+          </button>
+        </div>
+      </div>
+
+      <!-- Sync Status Banner -->
+      <div id="syncStatusBanner" class="sync-banner banner-synced">
+        <div class="banner-icon">✅</div>
+        <div class="banner-content">
+          <h4 id="syncBannerTitle">Toolkit is Up to Date with Official MOH Guidelines</h4>
+          <p id="syncBannerDesc">Local database contains all latest revisions up to <strong>January 2026</strong>. Click "Check for Live Updates" anytime to query the MOH Google Site live.</p>
+          <span id="lastCheckedTime" class="sync-timestamp">Last checked: Just now</span>
+        </div>
+      </div>
+
+      <!-- Updates Timeline / Changelog List -->
+      <div class="changelog-wrapper">
+        <h3>Official NAG Revision History & What's New</h3>
+        <div id="changelogList" class="changelog-list">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Application Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <strong>NAG 2024 Paediatric Antibiotics Toolkit & Calculator</strong>
+        <p>Created by <strong>faithx</strong> for healthcare providers.</p>
+        <p class="footer-disclaimer">
+          Guideline source: Ministry of Health Malaysia (National Antimicrobial Guideline 2024 & Revisions). Intended to assist qualified medical practitioners. Clinical judgement must always prevail.
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="https://sites.google.com/moh.gov.my/nag/contents?authuser=0&pli=1" target="_blank" rel="noopener">Official NAG Google Site ↗</a>
+        <a href="https://sites.google.com/moh.gov.my/nag/information/whats-new" target="_blank" rel="noopener">MOH What's New Page ↗</a>
+        <a href="https://forms.gle/dLJmYjd8aV6eQ4Bm8" target="_blank" rel="noopener">MOH Feedback Form ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
