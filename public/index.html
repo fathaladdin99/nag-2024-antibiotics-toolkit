@@ -51,21 +51,25 @@
           <span class="tab-icon">🧮</span>
           <span class="tab-label">Paediatric Calculator</span>
         </button>
+        <button class="nav-tab" data-tab="adultTab">
+          <span class="tab-icon">🧑</span>
+          <span class="tab-label">Adult Antibiotics</span>
+        </button>
         <button class="nav-tab" data-tab="neonatalTab">
           <span class="tab-icon">👶</span>
-          <span class="tab-label">Neonatal Sub-Calculator</span>
+          <span class="tab-label">Neonatal Regimens</span>
         </button>
         <button class="nav-tab" data-tab="guidelinesTab">
           <span class="tab-icon">📚</span>
-          <span class="tab-label">NAG 2024 Toolkit</span>
+          <span class="tab-label">Paediatric Toolkit</span>
         </button>
         <button class="nav-tab" data-tab="toolsTab">
           <span class="tab-icon">⚖️</span>
-          <span class="tab-label">Clinical Tools (eGFR / Allergy)</span>
+          <span class="tab-label">Clinical Tools (eGFR / CrCl)</span>
         </button>
         <button class="nav-tab" data-tab="updatesTab">
           <span class="tab-icon">🔄</span>
-          <span class="tab-label">Live Updates & Sync</span>
+          <span class="tab-label">NAG Updates</span>
           <span id="updateAlertDot" class="update-badge hidden">NEW</span>
         </button>
       </div>
@@ -302,6 +306,44 @@
       </div>
     </section>
 
+    <!-- ============================================================== -->
+    <!-- TAB: ADULT ANTIBIOTICS OF CHOICE (NAG 2024 Section A)          -->
+    <!-- ============================================================== -->
+    <section id="adultTab" class="tab-content">
+      <div class="adult-header-banner">
+        <div class="adult-header-text">
+          <h2>🧑 Adult Empiric Antibiotics of Choice (NAG 2024)</h2>
+          <p>Instant access to first-line and alternative regimens across Section A (A1 to A17) without slow page loads.</p>
+        </div>
+        <div class="adult-quick-stats">
+          <span class="stat-pill">⚡ 24 Curated Topics</span>
+          <span class="stat-pill">🏥 MOH Malaysia Guidelines</span>
+        </div>
+      </div>
+
+      <div class="adult-top-bar">
+        <div class="search-box-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="adultSearchInput" placeholder="Quick search adult condition, antibiotic, or pathogen (e.g. CAP, SBP, Cellulitis, UTI, H. pylori, Syphilis)...">
+        </div>
+        <div class="filter-group adult-filter-group">
+          <button class="filter-btn active" data-adult-cat="all">All</button>
+          <button class="filter-btn" data-adult-cat="Respiratory">Respiratory</button>
+          <button class="filter-btn" data-adult-cat="Urinary Tract">UTI / Prostatitis</button>
+          <button class="filter-btn" data-adult-cat="Skin & Soft Tissue">Skin &amp; SSTI</button>
+          <button class="filter-btn" data-adult-cat="Gastrointestinal">GIT / Biliary</button>
+          <button class="filter-btn" data-adult-cat="Central Nervous System">CNS / Meningitis</button>
+          <button class="filter-btn" data-adult-cat="Sexually Transmitted">STI / Syphilis</button>
+          <button class="filter-btn" data-adult-cat="ENT">ENT / Sore Throat</button>
+          <button class="filter-btn" data-adult-cat="Tropical">Tropical</button>
+          <button class="filter-btn" data-adult-cat="Sepsis">Sepsis</button>
+        </div>
+      </div>
+
+      <div id="adultConditionsContainer" class="adult-cards-grid">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </section>
 
     <!-- ============================================================== -->
     <!-- TAB 2: NEONATAL SUB-CALCULATOR (Gestational & Postnatal Stratified)-->
@@ -539,6 +581,61 @@
                 ⚠️ <strong>Cephalosporin Cross-Reactivity is &lt; 1-2%:</strong> 3rd and 4th generation cephalosporins (Cefotaxime, Ceftriaxone, Ceftazidime) and Carbapenems (Meropenem) have different side chains and can generally be safely administered under medical observation.
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Tool 1B: Adult Cockcroft-Gault CrCl Calculator -->
+        <div class="tool-card">
+          <div class="tool-header">
+            <h3>🧑 Adult Cockcroft-Gault CrCl Calculator</h3>
+            <span class="tool-badge">Appendix 2 (Adult)</span>
+          </div>
+          <p class="tool-desc">
+            Calculates estimated Creatinine Clearance (CrCl) for adults (≥18 years) to guide antimicrobial dosage adjustment:
+            <code>CrCl (mL/min) = [(140 - Age) × Weight (kg) × F] / SCr (µmol/L)</code> (where F = 1.23 for males, 1.04 for females).
+          </p>
+
+          <div class="tool-form-grid">
+            <div class="form-group">
+              <label for="crclAge">Age (Years)</label>
+              <div class="input-with-unit">
+                <input type="number" id="crclAge" min="18" max="110" value="65" step="1">
+                <span class="unit-tag">yrs</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="crclGender">Gender</label>
+              <div class="select-wrapper">
+                <select id="crclGender">
+                  <option value="male" selected>Male (F = 1.23)</option>
+                  <option value="female">Female (F = 1.04)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="crclWeight">Weight (kg)</label>
+              <div class="input-with-unit">
+                <input type="number" id="crclWeight" min="30" max="200" value="60" step="0.5">
+                <span class="unit-tag">kg</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="crclCreatinine">Serum Creatinine</label>
+              <div class="input-with-unit">
+                <input type="number" id="crclCreatinine" min="30" max="1500" value="110" step="1">
+                <span class="unit-tag">µmol/L</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tool-result-box">
+            <span class="tool-res-label">ESTIMATED CREATININE CLEARANCE (CrCl)</span>
+            <div class="tool-res-val-wrap">
+              <span id="crclResultNumber" class="tool-res-number">50.3</span>
+              <span class="tool-res-unit">mL/min</span>
+            </div>
+            <span id="crclStageTag" class="badge-stage stage-normal">Mild-Moderate Impairment (30 - 50 mL/min)</span>
+            <p id="crclDoseAdvice" class="egfr-dose-advice">Check Appendix 2 for dose reduction or interval extension (e.g. Cefepime q12h, Meropenem 1g q12h).</p>
           </div>
         </div>
 

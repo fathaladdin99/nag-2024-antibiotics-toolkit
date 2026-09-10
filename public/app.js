@@ -9,6 +9,7 @@ const AppState = {
   conditions: [],
   antibiotics: [],
   neonatalDrugs: [],
+  adultConditions: [],
   changelog: null,
   activeCondition: null,
   activeAntibiotic: null,
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadDatasets();
   initCalculator();
   initNeonatalCalculator();
+  initAdultGuide();
   initClinicalTools();
   checkLiveUpdates();
 });
@@ -98,12 +100,26 @@ function initDOMElements() {
   DOM.filterBtns = document.querySelectorAll('.filter-btn');
   DOM.guidelinesContainer = document.getElementById('guidelinesContainer');
 
+  // Adult Guide DOM
+  DOM.adultSearchInput = document.getElementById('adultSearchInput');
+  DOM.adultFilterBtns = document.querySelectorAll('[data-adult-cat]');
+  DOM.adultConditionsContainer = document.getElementById('adultConditionsContainer');
+
   // Clinical Tools DOM
   DOM.egfrHeight = document.getElementById('egfrHeight');
   DOM.egfrCreatinine = document.getElementById('egfrCreatinine');
   DOM.egfrResultNumber = document.getElementById('egfrResultNumber');
   DOM.egfrStageTag = document.getElementById('egfrStageTag');
   DOM.egfrDoseAdvice = document.getElementById('egfrDoseAdvice');
+
+  // Adult CrCl DOM
+  DOM.crclAge = document.getElementById('crclAge');
+  DOM.crclGender = document.getElementById('crclGender');
+  DOM.crclWeight = document.getElementById('crclWeight');
+  DOM.crclCreatinine = document.getElementById('crclCreatinine');
+  DOM.crclResultNumber = document.getElementById('crclResultNumber');
+  DOM.crclStageTag = document.getElementById('crclStageTag');
+  DOM.crclDoseAdvice = document.getElementById('crclDoseAdvice');
 
   // Updates DOM
   DOM.checkUpdatesManualBtn = document.getElementById('checkUpdatesManualBtn');
@@ -170,28 +186,33 @@ function switchTab(tabId) {
    ========================================================================== */
 async function loadDatasets() {
   try {
-    const [condRes, abxRes, neoRes, clRes] = await Promise.all([
+    const [condRes, abxRes, neoRes, clRes, adultRes] = await Promise.all([
       fetch('/api/conditions').then(r => r.json()),
       fetch('/api/antibiotics').then(r => r.json()),
       fetch('/api/neonatal').then(r => r.json()),
-      fetch('/api/changelog').then(r => r.json())
+      fetch('/api/changelog').then(r => r.json()),
+      fetch('/api/adult-conditions').then(r => r.json())
     ]);
 
     AppState.conditions = condRes;
     AppState.antibiotics = abxRes;
     AppState.neonatalDrugs = neoRes;
     AppState.changelog = clRes;
+    AppState.adultConditions = adultRes;
 
     // Cache locally for offline capability
     localStorage.setItem('nag_cached_conditions', JSON.stringify(condRes));
     localStorage.setItem('nag_cached_antibiotics', JSON.stringify(abxRes));
+    localStorage.setItem('nag_cached_adult', JSON.stringify(adultRes));
   } catch (err) {
     console.warn('Network fetch error, attempting offline cache:', err);
     const cachedCond = localStorage.getItem('nag_cached_conditions');
     const cachedAbx = localStorage.getItem('nag_cached_antibiotics');
+    const cachedAdult = localStorage.getItem('nag_cached_adult');
     if (cachedCond && cachedAbx) {
       AppState.conditions = JSON.parse(cachedCond);
       AppState.antibiotics = JSON.parse(cachedAbx);
+      if (cachedAdult) AppState.adultConditions = JSON.parse(cachedAdult);
       showToast('Loaded guidelines from offline cache');
     }
   }
@@ -639,6 +660,171 @@ Reference: MOH NAG 2024 Section B6 (faithx)`;
 /* ==========================================================================
    Guidelines Browser & Search
    ========================================================================== */
+/* ==========================================================================
+   Adult Antibiotics Guide (Section A)
+   ========================================================================== */
+function initAdultGuide() {
+  if (AppState.adultConditions && AppState.adultConditions.length > 0) {
+    renderAdultConditions(AppState.adultConditions);
+  }
+
+  DOM.adultSearchInput.addEventListener('input', () => {
+    const q = DOM.adultSearchInput.value.toLowerCase().trim();
+    const activeCat = document.querySelector('[data-adult-cat].active').getAttribute('data-adult-cat');
+    filterAdultConditions(q, activeCat);
+  });
+
+  DOM.adultFilterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      DOM.adultFilterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.getAttribute('data-adult-cat');
+      const q = DOM.adultSearchInput.value.toLowerCase().trim();
+      filterAdultConditions(q, cat);
+    });
+  });
+}
+
+function filterAdultConditions(query, category) {
+  let filtered = AppState.adultConditions;
+
+  if (category !== 'all') {
+    filtered = filtered.filter(c => c.category.toLowerCase().includes(category.toLowerCase()));
+  }
+
+  if (query) {
+    filtered = filtered.filter(c =>
+      c.name.toLowerCase().includes(query) ||
+      c.category.toLowerCase().includes(query) ||
+      c.organism.toLowerCase().includes(query) ||
+      c.preferred.drug.toLowerCase().includes(query) ||
+      c.alternatives.some(a => a.drug.toLowerCase().includes(query))
+    );
+  }
+
+  renderAdultConditions(filtered);
+}
+
+function renderAdultConditions(list) {
+  DOM.adultConditionsContainer.innerHTML = '';
+
+  if (!list || list.length === 0) {
+    DOM.adultConditionsContainer.innerHTML = `
+      <div style="grid-column: 1/-1; text-align:center; padding: 3rem; color: var(--text-muted);">
+        <p style="font-size: 1.2rem;">No matching adult condition found.</p>
+        <p style="font-size: 0.85rem;">Try another search term or reset filters.</p>
+      </div>
+    `;
+    return;
+  }
+
+  list.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'adult-condition-card';
+
+    const awareClass = `aware-${(item.preferred.aware || 'Access').toLowerCase()}`;
+
+    let altsHtml = item.alternatives.map(a => `
+      <div class="acc-alt-item">
+        <strong>${a.drug}</strong>: ${a.doseText}
+      </div>
+    `).join('');
+
+    card.innerHTML = `
+      <div>
+        <div class="acc-header">
+          <h3 class="acc-title">${item.name}</h3>
+          <span class="acc-category">${item.category}</span>
+        </div>
+        <p class="acc-organism"><strong>Pathogens:</strong> ${item.organism}</p>
+
+        <!-- Preferred First-Line Box -->
+        <div class="acc-preferred-box">
+          <div class="acc-pref-label">
+            <span>⭐ Preferred First-Line Choice</span>
+            <span class="aware-tag ${awareClass}" style="font-size:0.65rem;padding:2px 6px;">AWaRe: ${item.preferred.aware || 'Access'}</span>
+          </div>
+          <div class="acc-pref-drug">${item.preferred.drug}</div>
+          <div class="acc-pref-dose">${item.preferred.doseText}</div>
+        </div>
+
+        <!-- Alternative Box -->
+        <div class="acc-alt-box">
+          <div class="acc-alt-label">Alternatives / Penicillin Allergy:</div>
+          ${altsHtml}
+        </div>
+
+        <div class="acc-footer-meta">
+          <span>Duration: <strong class="acc-duration">${item.duration}</strong></span>
+          <span>Route: <strong>${item.preferred.route}</strong></span>
+        </div>
+
+        <p class="acc-comments">ℹ️ ${item.comments}</p>
+      </div>
+
+      <button class="copy-adult-rx-btn" data-adult-id="${item.id}">
+        📋 Copy Prescription Note
+      </button>
+    `;
+
+    card.querySelector('.copy-adult-rx-btn').addEventListener('click', () => {
+      const rxNote = `Rx (Adult): ${item.preferred.drug}
+Dose: ${item.preferred.doseText}
+Duration: ${item.duration}
+Diagnosis: ${item.name}
+Pathogens: ${item.organism}
+Guideline: MOH Malaysia NAG 2024 (faithx)`;
+
+      navigator.clipboard.writeText(rxNote).then(() => {
+        showToast(`Copied prescription for ${item.name}! 📋`);
+      });
+    });
+
+    DOM.adultConditionsContainer.appendChild(card);
+  });
+}
+
+function recalculateCrcl() {
+  const age = parseFloat(DOM.crclAge.value) || 65;
+  const weight = parseFloat(DOM.crclWeight.value) || 60;
+  const gender = DOM.crclGender.value;
+  const scr = parseFloat(DOM.crclCreatinine.value) || 110;
+
+  // Cockcroft-Gault Equation with Serum Creatinine in µmol/L:
+  // Male: CrCl = [(140 - Age) × Weight (kg) × 1.23] / SCr (µmol/L)
+  // Female: CrCl = [(140 - Age) × Weight (kg) × 1.04] / SCr (µmol/L)
+  const factor = gender === 'male' ? 1.23 : 1.04;
+  const crcl = Math.round((((140 - age) * weight * factor) / scr) * 10) / 10;
+
+  DOM.crclResultNumber.textContent = crcl.toFixed(1);
+
+  if (crcl >= 90) {
+    DOM.crclStageTag.className = 'badge-stage stage-normal';
+    DOM.crclStageTag.textContent = 'Normal Renal Function (≥ 90 mL/min)';
+    DOM.crclDoseAdvice.textContent = 'Standard adult antibiotic dosing appropriate. No automatic dose reduction required.';
+  } else if (crcl >= 50) {
+    DOM.crclStageTag.className = 'badge-stage stage-normal';
+    DOM.crclStageTag.textContent = 'Mild Impairment (50 - 89 mL/min)';
+    DOM.crclDoseAdvice.textContent = 'Standard dosing for most beta-lactams. Minor adjustment for high-dose aminoglycosides/vancomycin.';
+  } else if (crcl >= 30) {
+    DOM.crclStageTag.className = 'badge-stage stage-impaired';
+    DOM.crclStageTag.textContent = 'Moderate Impairment (30 - 49 mL/min)';
+    DOM.crclDoseAdvice.textContent = 'Renal adjustment required per Appendix 2: Extend interval (e.g. Cefepime 2g q12h, Meropenem 1g q12h, Ciprofloxacin 500mg q24h).';
+  } else if (crcl >= 10) {
+    DOM.crclStageTag.className = 'badge-stage stage-impaired';
+    DOM.crclStageTag.style.background = 'var(--aware-reserve-bg)';
+    DOM.crclStageTag.style.color = 'var(--aware-reserve-text)';
+    DOM.crclStageTag.textContent = 'Severe Impairment (10 - 29 mL/min)';
+    DOM.crclDoseAdvice.textContent = 'Significant dose reduction required! Nitrofurantoin contraindicated. TDM mandatory for Vancomycin and Aminoglycosides.';
+  } else {
+    DOM.crclStageTag.className = 'badge-stage stage-impaired';
+    DOM.crclStageTag.style.background = 'var(--aware-reserve-bg)';
+    DOM.crclStageTag.style.color = 'var(--aware-reserve-text)';
+    DOM.crclStageTag.textContent = 'End-Stage Renal Disease (< 10 mL/min / Dialysis)';
+    DOM.crclDoseAdvice.textContent = 'Give supplemental dose post-haemodialysis for dialyzable drugs (Aminopenicillins, Cephalosporins, Aminoglycosides).';
+  }
+}
+
 function initClinicalTools() {
   renderGuidelines(AppState.conditions);
 
@@ -662,6 +848,13 @@ function initClinicalTools() {
   DOM.egfrHeight.addEventListener('input', recalculateEgfr);
   DOM.egfrCreatinine.addEventListener('input', recalculateEgfr);
   recalculateEgfr();
+
+  // CrCl calculator events
+  DOM.crclAge.addEventListener('input', recalculateCrcl);
+  DOM.crclGender.addEventListener('change', recalculateCrcl);
+  DOM.crclWeight.addEventListener('input', recalculateCrcl);
+  DOM.crclCreatinine.addEventListener('input', recalculateCrcl);
+  recalculateCrcl();
 }
 
 function filterGuidelines(query, category) {
