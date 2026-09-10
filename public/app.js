@@ -214,18 +214,29 @@ function switchTab(tabId) {
 }
 
 /* ==========================================================================
-   Dataset Loader
+   Dataset Loader (Supports Node Server, Vercel & GitHub Pages)
    ========================================================================== */
 async function loadDatasets() {
+  const fetchJson = async (apiUrl, fallbackPath) => {
+    try {
+      const res = await fetch(apiUrl);
+      if (res.ok) return await res.json();
+    } catch (e) {
+      // Ignore and fallback
+    }
+    const fallbackRes = await fetch(fallbackPath);
+    return await fallbackRes.json();
+  };
+
   try {
     const [condRes, abxRes, neoRes, clRes, adultRes, paedRes, pathRes] = await Promise.all([
-      fetch('/api/conditions').then(r => r.json()),
-      fetch('/api/antibiotics').then(r => r.json()),
-      fetch('/api/neonatal').then(r => r.json()),
-      fetch('/api/changelog').then(r => r.json()),
-      fetch('/api/adult-conditions').then(r => r.json()),
-      fetch('/api/paediatric-conditions').then(r => r.json()),
-      fetch('/api/pathways').then(r => r.json())
+      fetchJson('/api/conditions', 'data/conditions.json'),
+      fetchJson('/api/antibiotics', 'data/antibiotics.json'),
+      fetchJson('/api/neonatal', 'data/neonatal.json'),
+      fetchJson('/api/changelog', 'data/changelog.json'),
+      fetchJson('/api/adult-conditions', 'data/adult_conditions.json'),
+      fetchJson('/api/paediatric-conditions', 'data/paediatric_all_conditions.json'),
+      fetchJson('/api/pathways', 'data/pathways.json')
     ]);
 
     AppState.conditions = condRes;

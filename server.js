@@ -217,3 +217,5 @@ server.listen(PORT, () => {
   console.log(`📡 Live NAG Updates Sync: http://localhost:${PORT}/api/updates/check`);
   console.log(`=======================================================`);
 });
+
+module.exports = server;
