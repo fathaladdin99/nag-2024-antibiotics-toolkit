@@ -1625,14 +1625,14 @@ async function checkLiveUpdates() {
 
     if (data.isUpToDate) {
       DOM.liveSyncChip.className = 'live-sync-chip status-synced';
-      DOM.syncChipText.textContent = `NAG Live: Sync (${data.currentLocalVersion})`;
+      DOM.syncChipText.innerHTML = `<span class="sync-text-full">NAG Live: Sync (${data.currentLocalVersion})</span><span class="sync-text-short">Jan '26</span>`;
       DOM.updateAlertDot.classList.add('hidden');
 
       DOM.syncBannerTitle.textContent = `Toolkit is Up to Date with Official NAG Google Site`;
       DOM.syncBannerDesc.textContent = `${data.message} Verified against ${data.sourceUrl}.`;
     } else {
       DOM.liveSyncChip.className = 'live-sync-chip status-update-needed';
-      DOM.syncChipText.textContent = `NAG Update: ${data.detectedOnlineVersion}!`;
+      DOM.syncChipText.innerHTML = `<span class="sync-text-full">NAG Update: ${data.detectedOnlineVersion}!</span><span class="sync-text-short">Update!</span>`;
       DOM.updateAlertDot.classList.remove('hidden');
 
       DOM.syncBannerTitle.textContent = `🔔 New Revision Published on NAG Google Site!`;

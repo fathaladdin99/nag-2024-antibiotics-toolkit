@@ -158,6 +158,22 @@ body {
   text-transform: uppercase;
 }
 
+.title-short {
+  display: none;
+}
+
+.title-full {
+  display: inline;
+}
+
+.subtitle-full {
+  display: inline;
+}
+
+.btn-text-desktop {
+  display: inline;
+}
+
 .brand-text h1 {
   font-size: 1.25rem;
   font-weight: 700;
@@ -197,6 +213,14 @@ body {
   cursor: pointer;
   border: 1px solid transparent;
   transition: all var(--transition-fast);
+}
+
+.sync-text-full {
+  display: inline;
+}
+
+.sync-text-short {
+  display: none;
 }
 
 .status-synced {
@@ -310,6 +334,14 @@ body {
   display: flex;
   gap: 0.5rem;
   overflow-x: auto;
+}
+
+.tab-label-short {
+  display: none;
+}
+
+.tab-label-full {
+  display: inline;
 }
 
 .nav-tab {
@@ -2305,5 +2337,486 @@ body.theme-dark .who-band-card {
   height: auto;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================================================
+   Mobile Responsive Optimizations (Android / iOS Phones <= 768px)
+   Tailored for quick clinical bedside reference without visual clutter
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Ultra-Compact App Header */
+  .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .header-container {
+    padding: 0.45rem 0.75rem;
+    gap: 0.4rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .brand-group {
+    gap: 0.45rem;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .app-logo-badge {
+    padding: 0.2rem 0.4rem;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .rx-symbol {
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+
+  .nag-tag {
+    font-size: 0.52rem;
+  }
+
+  .brand-text {
+    min-width: 0;
+  }
+
+  .brand-text h1 {
+    font-size: 0.92rem;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+  }
+
+  .title-full {
+    display: none !important;
+  }
+
+  .title-short {
+    display: inline !important;
+    font-weight: 800;
+  }
+
+  .subtitle-full {
+    display: none !important;
+  }
+
+  .brand-subtitle {
+    font-size: 0.68rem;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-muted);
+  }
+
+  .creator-badge {
+    font-size: 0.64rem;
+    padding: 1px 5px;
+  }
+
+  /* Compact Header Action Buttons */
+  .header-actions {
+    gap: 0.3rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .live-sync-chip {
+    padding: 0.25rem 0.45rem;
+    font-size: 0.68rem;
+    gap: 0.25rem;
+    height: 32px;
+    border-radius: 999px;
+  }
+
+  .sync-text-full {
+    display: none !important;
+  }
+
+  .sync-text-short {
+    display: inline !important;
+  }
+
+  .btn-text-desktop {
+    display: none !important;
+  }
+
+  .header-pill-btn {
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  /* Sleek Scrollable Navigation Tabs */
+  .app-nav {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .nav-container {
+    padding: 0 0.5rem;
+    gap: 0.25rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+  }
+
+  .nav-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-tab {
+    padding: 0.6rem 0.65rem;
+    font-size: 0.8rem;
+    gap: 0.3rem;
+    flex-shrink: 0;
+    border-bottom-width: 2.5px;
+  }
+
+  .tab-icon {
+    font-size: 0.95rem;
+  }
+
+  .tab-label-full {
+    display: none !important;
+  }
+
+  .tab-label-short {
+    display: inline !important;
+    font-weight: 600;
+  }
+
+  /* Main App Container */
+  .app-main {
+    margin: 0.75rem auto 2.5rem;
+    padding: 0 0.65rem;
+  }
+
+  /* Calculator Form Layout */
+  .calculator-layout {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .calc-panel {
+    padding: 0.85rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .panel-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .panel-header h2 {
+    font-size: 1.05rem;
+  }
+
+  .subtext {
+    font-size: 0.75rem;
+  }
+
+  .form-group-row {
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .form-group {
+    margin-bottom: 0.75rem;
+  }
+
+  .form-group label {
+    font-size: 0.78rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .label-with-hint {
+    margin-bottom: 0.2rem;
+  }
+
+  .hint-text {
+    font-size: 0.72rem;
+  }
+
+  .input-with-unit input {
+    padding: 0.55rem 2.4rem 0.55rem 0.65rem;
+    font-size: 0.95rem;
+    border-radius: 8px;
+  }
+
+  .unit-tag {
+    right: 0.65rem;
+    font-size: 0.75rem;
+  }
+
+  /* Quick Weight Steppers: Smooth single horizontal scroll row */
+  .quick-weight-tags {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.35rem;
+    padding: 2px 0;
+    margin-top: 0.35rem;
+  }
+
+  .quick-weight-tags::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tag-btn {
+    flex-shrink: 0;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.72rem;
+    border-radius: 6px;
+  }
+
+  .form-divider {
+    margin: 0.75rem 0;
+  }
+
+  .select-wrapper select {
+    padding: 0.6rem 2rem 0.6rem 0.65rem;
+    font-size: 0.88rem;
+    border-radius: 8px;
+  }
+
+  .condition-meta-badges {
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+  }
+
+  .meta-chip {
+    font-size: 0.68rem;
+    padding: 2px 6px;
+  }
+
+  .highlight-box {
+    padding: 0.75rem;
+  }
+
+  /* Dose Result Card (Hero) */
+  .dose-hero-card {
+    padding: 0.85rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-header-row {
+    margin-bottom: 0.65rem;
+  }
+
+  .hero-header-row h3 {
+    font-size: 1rem;
+  }
+
+  .hero-metric-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .metric-block {
+    padding: 0.6rem;
+    border-radius: 8px;
+  }
+
+  .hero-number {
+    font-size: 1.65rem;
+  }
+
+  .hero-unit {
+    font-size: 0.95rem;
+  }
+
+  .metric-sublabel {
+    font-size: 0.7rem;
+  }
+
+  .hero-footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding-top: 0.65rem;
+    margin-top: 0.65rem;
+  }
+
+  .footer-item {
+    font-size: 0.74rem;
+  }
+
+  .footer-label {
+    font-size: 0.68rem;
+  }
+
+  .alert-box {
+    padding: 0.65rem;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .alert-icon {
+    font-size: 1.2rem;
+  }
+
+  .alert-content strong {
+    font-size: 0.8rem;
+  }
+
+  .alert-content p {
+    font-size: 0.74rem;
+  }
+
+  .who-band-card,
+  .info-card,
+  .clinical-remarks-card {
+    padding: 0.75rem;
+    margin-top: 0.65rem;
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+  }
+
+  .who-band-card h4,
+  .info-card h4,
+  .clinical-remarks-card h4 {
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .action-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+  }
+
+  .action-footer button,
+  .action-footer a {
+    width: 100%;
+    justify-content: center;
+    padding: 0.65rem 1rem;
+    font-size: 0.84rem;
+  }
+
+  /* Adult Toolkit Mobile Banner & Filter */
+  .adult-header-banner {
+    padding: 0.85rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 0.85rem;
+  }
+
+  .adult-header-banner h2 {
+    font-size: 1.1rem;
+  }
+
+  .adult-banner-sub {
+    font-size: 0.75rem;
+  }
+
+  .adult-category-pills {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.35rem;
+    padding-bottom: 4px;
+  }
+
+  .cat-pill {
+    flex-shrink: 0;
+    font-size: 0.74rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .adult-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .adult-condition-card {
+    padding: 0.85rem;
+    border-radius: var(--radius-md);
+  }
+
+  .verbatim-regimen-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: 0.75rem;
+  }
+
+  /* Pathways & Guidelines Grids */
+  .pathway-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .guidelines-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .search-bar-wrap input {
+    padding: 0.6rem 1rem 0.6rem 2.2rem;
+    font-size: 0.88rem;
+  }
+
+  /* Modals & Dialogs on Mobile */
+  .disclaimer-modal-dialog,
+  .pathway-modal-dialog {
+    width: 95vw;
+    max-height: 92vh;
+    border-radius: var(--radius-md);
+  }
+
+  .disclaimer-modal-header,
+  .pathway-modal-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .disclaimer-modal-body,
+  .pathway-modal-body {
+    padding: 0.85rem;
+    font-size: 0.82rem;
+  }
+
+  /* Footer on Mobile */
+  .app-footer {
+    padding: 1.5rem 0.85rem;
+    font-size: 0.75rem;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .footer-legal-callout {
+    padding: 0.75rem;
+    font-size: 0.75rem;
+  }
 }
 
