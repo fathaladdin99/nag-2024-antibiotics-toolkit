@@ -1,5 +1,25 @@
 [
   {
+    "id": "supportive_care",
+    "name": "Supportive Care Only (No Routine Antibiotics)",
+    "class": "Supportive / Stewardship",
+    "aware": "Access",
+    "routes": [
+      "Supportive Care"
+    ],
+    "formulations": [
+      {
+        "name": "Supportive Therapy / Hydration / Antipyresis",
+        "mgPerMl": null,
+        "unit": "N/A",
+        "type": "supportive"
+      }
+    ],
+    "syringeAdvice": "No antibiotic indicated. Recommend oral rehydration, antipyretics (Paracetamol 15mg/kg q6h PRN), and educate caregivers on red flags.",
+    "renalDosing": "Not applicable.",
+    "contraindications": []
+  },
+  {
     "id": "amoxicillin",
     "name": "Amoxicillin",
     "class": "Aminopenicillin",
@@ -764,5 +784,305 @@
     "maxSingleDoseAdult": "4500 mg/dose",
     "renalAdjustment": "CrCl 20-50 mL/min: 2.25g q6h or 3.375g q8h; CrCl < 20 mL/min: 2.25g q8h.",
     "safetyWarnings": "Doses specified by piperacillin component. Extended infusion over 3-4 hours improves pharmacodynamic target attainment. Synergistic nephrotoxicity when combined with vancomycin."
+  },
+  {
+    "id": "ciprofloxacin",
+    "name": "Ciprofloxacin",
+    "class": "Fluoroquinolone",
+    "aware": "Watch",
+    "routes": [
+      "Oral (PO)",
+      "Intravenous (IV)"
+    ],
+    "formulations": [
+      {
+        "name": "Ciprofloxacin Tablet 250 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "tablet"
+      },
+      {
+        "name": "Ciprofloxacin Tablet 500 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "tablet"
+      },
+      {
+        "name": "Ciprofloxacin IV 200 mg / 100 mL Infusion",
+        "mgPerMl": 2,
+        "unit": "mg",
+        "type": "iv_infusion"
+      }
+    ],
+    "syringeAdvice": "Use IV infusion over 60 minutes. For oral, take with copious water; avoid concurrent milk/antacids.",
+    "renalDosing": "CrCl 30-50 mL/min: 50-70% standard dose or q12h; CrCl <30 mL/min: 50% standard dose or q18-24h.",
+    "contraindications": [
+      "Known hypersensitivity",
+      "History of fluoroquinolone tendonitis"
+    ]
+  },
+  {
+    "id": "clarithromycin",
+    "name": "Clarithromycin",
+    "class": "Macrolide",
+    "aware": "Watch",
+    "routes": [
+      "Oral (PO)"
+    ],
+    "formulations": [
+      {
+        "name": "Clarithromycin Paediatric Suspension 125 mg / 5 mL",
+        "mgPerMl": 25,
+        "unit": "mg",
+        "type": "liquid"
+      },
+      {
+        "name": "Clarithromycin Paediatric Suspension 250 mg / 5 mL",
+        "mgPerMl": 50,
+        "unit": "mg",
+        "type": "liquid"
+      },
+      {
+        "name": "Clarithromycin Tablet 250 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "tablet"
+      },
+      {
+        "name": "Clarithromycin Tablet 500 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "tablet"
+      }
+    ],
+    "syringeAdvice": "Shake suspension well before measuring with an oral syringe. Can be taken with or without food.",
+    "renalDosing": "CrCl <30 mL/min: Reduce dose by 50% (OD or max 250mg BD).",
+    "contraindications": [
+      "Severe hepatic impairment with renal impairment",
+      "Concurrent terfenadine/astemizole/cisapride"
+    ]
+  },
+  {
+    "id": "doxycycline",
+    "name": "Doxycycline",
+    "class": "Tetracycline",
+    "aware": "Access",
+    "routes": [
+      "Oral (PO)"
+    ],
+    "formulations": [
+      {
+        "name": "Doxycycline Capsule 100 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "capsule"
+      },
+      {
+        "name": "Doxycycline Tablet 50 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "tablet"
+      }
+    ],
+    "syringeAdvice": "Swallow whole with plenty of fluids while sitting or standing to avoid esophageal irritation. Avoid dairy/calcium within 2 hours.",
+    "renalDosing": "No dosage adjustment required in renal failure.",
+    "contraindications": [
+      "Children < 8 years old (except for life-threatening rickettsia/leptospirosis)",
+      "Pregnancy"
+    ]
+  },
+  {
+    "id": "fluconazole",
+    "name": "Fluconazole",
+    "class": "Antifungal (Triazole)",
+    "aware": "Watch",
+    "routes": [
+      "Oral (PO)",
+      "Intravenous (IV)"
+    ],
+    "formulations": [
+      {
+        "name": "Fluconazole Suspension 50 mg / 5 mL",
+        "mgPerMl": 10,
+        "unit": "mg",
+        "type": "liquid"
+      },
+      {
+        "name": "Fluconazole Capsule 50 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "capsule"
+      },
+      {
+        "name": "Fluconazole Capsule 150 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "capsule"
+      },
+      {
+        "name": "Fluconazole IV 200 mg / 100 mL Infusion",
+        "mgPerMl": 2,
+        "unit": "mg",
+        "type": "iv_infusion"
+      }
+    ],
+    "syringeAdvice": "Shake suspension thoroughly. Administer IV infusion at max rate of 200 mg/hour.",
+    "renalDosing": "CrCl 21-50 mL/min: 50% normal dose; CrCl <20 mL/min: 25% normal dose.",
+    "contraindications": [
+      "Known azole hypersensitivity",
+      "Co-administration with CYP3A4-prolonging QT drugs"
+    ]
+  },
+  {
+    "id": "acyclovir",
+    "name": "Acyclovir (Aciclovir)",
+    "class": "Antiviral",
+    "aware": "Access",
+    "routes": [
+      "Oral (PO)",
+      "Intravenous (IV)"
+    ],
+    "formulations": [
+      {
+        "name": "Acyclovir Suspension 200 mg / 5 mL",
+        "mgPerMl": 40,
+        "unit": "mg",
+        "type": "liquid"
+      },
+      {
+        "name": "Acyclovir Tablet 200 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "tablet"
+      },
+      {
+        "name": "Acyclovir Tablet 400 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "tablet"
+      },
+      {
+        "name": "Acyclovir Tablet 800 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "tablet"
+      },
+      {
+        "name": "Acyclovir IV 250 mg Vial",
+        "mgPerMl": 25,
+        "unit": "mg",
+        "type": "iv_vial"
+      }
+    ],
+    "syringeAdvice": "Ensure adequate patient hydration to prevent renal tubular crystallization. Infuse IV over at least 1 hour.",
+    "renalDosing": "CrCl 25-50 mL/min: q12h; CrCl 10-25 mL/min: q24h; CrCl <10 mL/min: 50% dose q24h.",
+    "contraindications": [
+      "Known hypersensitivity to acyclovir or valacyclovir"
+    ]
+  },
+  {
+    "id": "oseltamivir",
+    "name": "Oseltamivir (Tamiflu)",
+    "class": "Neuraminidase Inhibitor",
+    "aware": "Access",
+    "routes": [
+      "Oral (PO)"
+    ],
+    "formulations": [
+      {
+        "name": "Oseltamivir Suspension 6 mg / mL (30 mg / 5 mL)",
+        "mgPerMl": 6,
+        "unit": "mg",
+        "type": "liquid"
+      },
+      {
+        "name": "Oseltamivir Capsule 30 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "capsule"
+      },
+      {
+        "name": "Oseltamivir Capsule 45 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "capsule"
+      },
+      {
+        "name": "Oseltamivir Capsule 75 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "capsule"
+      }
+    ],
+    "syringeAdvice": "Shake well. Can be mixed with sweetened water or syrup if needed to mask taste.",
+    "renalDosing": "CrCl 10-30 mL/min: 50% dose or OD dosing.",
+    "contraindications": [
+      "Hypersensitivity to oseltamivir"
+    ]
+  },
+  {
+    "id": "chloramphenicol",
+    "name": "Chloramphenicol",
+    "class": "Amphenicol",
+    "aware": "Access",
+    "routes": [
+      "Intravenous (IV)",
+      "Oral (PO)"
+    ],
+    "formulations": [
+      {
+        "name": "Chloramphenicol 1000 mg (1 g) Vial",
+        "mgPerMl": 100,
+        "unit": "mg",
+        "type": "iv_vial"
+      },
+      {
+        "name": "Chloramphenicol Suspension 125 mg / 5 mL",
+        "mgPerMl": 25,
+        "unit": "mg",
+        "type": "liquid"
+      }
+    ],
+    "syringeAdvice": "Monitor serum drug levels. Caution for Gray Baby Syndrome in neonates and bone marrow suppression.",
+    "renalDosing": "Caution in hepatic failure. Renal dose adjustment generally not needed for active drug.",
+    "contraindications": [
+      "History of aplastic anaemia",
+      "Routine prophylaxis"
+    ]
+  },
+  {
+    "id": "rifampicin",
+    "name": "Rifampicin",
+    "class": "Rifamycin",
+    "aware": "Access",
+    "routes": [
+      "Oral (PO)"
+    ],
+    "formulations": [
+      {
+        "name": "Rifampicin Syrup 100 mg / 5 mL",
+        "mgPerMl": 20,
+        "unit": "mg",
+        "type": "liquid"
+      },
+      {
+        "name": "Rifampicin Capsule 150 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "capsule"
+      },
+      {
+        "name": "Rifampicin Capsule 300 mg",
+        "mgPerMl": null,
+        "unit": "mg",
+        "type": "capsule"
+      }
+    ],
+    "syringeAdvice": "Take on an empty stomach (30 mins before or 2 hours after meals). Warn caregivers that urine, saliva, and tears will turn orange-red.",
+    "renalDosing": "No reduction required unless severe hepatic impairment.",
+    "contraindications": [
+      "Concurrent use of protease inhibitors",
+      "Jaundice"
+    ]
   }
 ]

@@ -29,6 +29,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   initCalculator();
   initNeonatalCalculator();
   initAdultGuide();
+  initPaediatricToolkit();
+  initPathways();
   initClinicalTools();
   checkLiveUpdates();
 });
@@ -47,8 +49,10 @@ function initDOMElements() {
   DOM.ageMonths = document.getElementById('ageMonths');
   DOM.patientWeight = document.getElementById('patientWeight');
   DOM.estimatedWeightHint = document.getElementById('estimatedWeightHint');
+  DOM.conditionSearchInput = document.getElementById('conditionSearchInput');
   DOM.conditionSelect = document.getElementById('conditionSelect');
   DOM.conditionBadgeContainer = document.getElementById('conditionBadgeContainer');
+  DOM.calcOpenNagBtn = document.getElementById('calcOpenNagBtn');
   DOM.antibioticSelect = document.getElementById('antibioticSelect');
   DOM.antibioticLineBadge = document.getElementById('antibioticLineBadge');
   DOM.antibioticNoteText = document.getElementById('antibioticNoteText');
@@ -95,10 +99,22 @@ function initDOMElements() {
   DOM.neonateClinicalNotes = document.getElementById('neonateClinicalNotes');
   DOM.copyNeonatePrescriptionBtn = document.getElementById('copyNeonatePrescriptionBtn');
 
-  // Guidelines DOM
+  // Guidelines / Paediatric Toolkit DOM
   DOM.guidelineSearchInput = document.getElementById('guidelineSearchInput');
   DOM.filterBtns = document.querySelectorAll('.filter-btn');
+  DOM.paedFilterBtns = document.querySelectorAll('[data-paed-sec]');
   DOM.guidelinesContainer = document.getElementById('guidelinesContainer');
+
+  // Pathways DOM
+  DOM.pathwaysContainer = document.getElementById('pathwaysContainer');
+  DOM.pathwayFilterBtns = document.querySelectorAll('[data-pathway-code]');
+  DOM.pathwayModal = document.getElementById('pathwayModal');
+  DOM.pathwayModalOverlay = document.getElementById('pathwayModalOverlay');
+  DOM.closePathwayModalBtn = document.getElementById('closePathwayModalBtn');
+  DOM.modalPathwayTitle = document.getElementById('modalPathwayTitle');
+  DOM.modalPathwayImg = document.getElementById('modalPathwayImg');
+  DOM.modalDriveLink = document.getElementById('modalDriveLink');
+  DOM.modalNagLink = document.getElementById('modalNagLink');
 
   // Adult Guide DOM
   DOM.adultSearchInput = document.getElementById('adultSearchInput');
@@ -186,12 +202,14 @@ function switchTab(tabId) {
    ========================================================================== */
 async function loadDatasets() {
   try {
-    const [condRes, abxRes, neoRes, clRes, adultRes] = await Promise.all([
+    const [condRes, abxRes, neoRes, clRes, adultRes, paedRes, pathRes] = await Promise.all([
       fetch('/api/conditions').then(r => r.json()),
       fetch('/api/antibiotics').then(r => r.json()),
       fetch('/api/neonatal').then(r => r.json()),
       fetch('/api/changelog').then(r => r.json()),
-      fetch('/api/adult-conditions').then(r => r.json())
+      fetch('/api/adult-conditions').then(r => r.json()),
+      fetch('/api/paediatric-conditions').then(r => r.json()),
+      fetch('/api/pathways').then(r => r.json())
     ]);
 
     AppState.conditions = condRes;
@@ -199,20 +217,28 @@ async function loadDatasets() {
     AppState.neonatalDrugs = neoRes;
     AppState.changelog = clRes;
     AppState.adultConditions = adultRes;
+    AppState.paediatricAllConditions = paedRes;
+    AppState.pathways = pathRes;
 
     // Cache locally for offline capability
     localStorage.setItem('nag_cached_conditions', JSON.stringify(condRes));
     localStorage.setItem('nag_cached_antibiotics', JSON.stringify(abxRes));
     localStorage.setItem('nag_cached_adult', JSON.stringify(adultRes));
+    localStorage.setItem('nag_cached_paed_all', JSON.stringify(paedRes));
+    localStorage.setItem('nag_cached_pathways', JSON.stringify(pathRes));
   } catch (err) {
     console.warn('Network fetch error, attempting offline cache:', err);
     const cachedCond = localStorage.getItem('nag_cached_conditions');
     const cachedAbx = localStorage.getItem('nag_cached_antibiotics');
     const cachedAdult = localStorage.getItem('nag_cached_adult');
+    const cachedPaed = localStorage.getItem('nag_cached_paed_all');
+    const cachedPaths = localStorage.getItem('nag_cached_pathways');
     if (cachedCond && cachedAbx) {
       AppState.conditions = JSON.parse(cachedCond);
       AppState.antibiotics = JSON.parse(cachedAbx);
       if (cachedAdult) AppState.adultConditions = JSON.parse(cachedAdult);
+      if (cachedPaed) AppState.paediatricAllConditions = JSON.parse(cachedPaed);
+      if (cachedPaths) AppState.pathways = JSON.parse(cachedPaths);
       showToast('Loaded guidelines from offline cache');
     }
   }
@@ -238,6 +264,17 @@ function initCalculator() {
 
   // Weight changes
   DOM.patientWeight.addEventListener('input', recalculate);
+
+  // Quick search filter for condition
+  if (DOM.conditionSearchInput) {
+    DOM.conditionSearchInput.addEventListener('input', () => {
+      const q = DOM.conditionSearchInput.value;
+      populateConditions(q);
+      if (DOM.conditionSelect.options.length > 0 && DOM.conditionSelect.value) {
+        onConditionChange();
+      }
+    });
+  }
 
   // Condition change: Re-filter the antibiotics
   DOM.conditionSelect.addEventListener('change', onConditionChange);
@@ -292,12 +329,29 @@ function onAgeChange() {
   recalculate();
 }
 
-function populateConditions() {
+function populateConditions(filterText = '') {
   DOM.conditionSelect.innerHTML = '';
-  
-  // Group conditions by category
+  const q = (filterText || '').toLowerCase().trim();
+
+  const filtered = q ? AppState.conditions.filter(c => 
+    (c.name && c.name.toLowerCase().includes(q)) ||
+    (c.category && c.category.toLowerCase().includes(q)) ||
+    (c.sectionCode && c.sectionCode.toLowerCase().includes(q)) ||
+    (c.commonOrganisms && c.commonOrganisms.toLowerCase().includes(q)) ||
+    (c.antibiotics && c.antibiotics.some(a => a.label.toLowerCase().includes(q)))
+  ) : AppState.conditions;
+
+  if (filtered.length === 0) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = `-- No matching condition found for "${filterText}" --`;
+    DOM.conditionSelect.appendChild(opt);
+    return;
+  }
+
+  // Group conditions by category (Section B1 to B14)
   const categories = {};
-  AppState.conditions.forEach(cond => {
+  filtered.forEach(cond => {
     if (!categories[cond.category]) categories[cond.category] = [];
     categories[cond.category].push(cond);
   });
@@ -313,6 +367,10 @@ function populateConditions() {
     });
     DOM.conditionSelect.appendChild(optgroup);
   }
+
+  if (filtered.length > 0) {
+    DOM.conditionSelect.value = filtered[0].id;
+  }
 }
 
 function onConditionChange() {
@@ -321,27 +379,40 @@ function onConditionChange() {
 
   if (!AppState.activeCondition) return;
 
+  // Update official NAG button link
+  if (DOM.calcOpenNagBtn) {
+    const secCode = AppState.activeCondition.sectionCode || 'B1';
+    const nagUrl = PAEDS_NAG_URLS[secCode] || 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics?authuser=0';
+    DOM.calcOpenNagBtn.href = nagUrl;
+    DOM.calcOpenNagBtn.textContent = `🔗 Open ${secCode} in Official NAG ↗`;
+  }
+
   // Render condition metadata badges
   DOM.conditionBadgeContainer.innerHTML = `
-    <span class="meta-chip">📁 ${AppState.activeCondition.category}</span>
-    <span class="meta-chip">👶 Age: ${AppState.activeCondition.ageSuitability}</span>
-    <span class="meta-chip">🦠 ${AppState.activeCondition.commonOrganisms.slice(0, 45)}...</span>
+    <span class="meta-chip">📁 ${escapeHtml(AppState.activeCondition.category)}</span>
+    <span class="meta-chip">👶 Age: ${escapeHtml(AppState.activeCondition.ageSuitability)}</span>
+    <span class="meta-chip">🦠 ${escapeHtml((AppState.activeCondition.commonOrganisms || '').slice(0, 45))}...</span>
   `;
 
-  // IMPORTANT REQUIREMENT:
-  // "when doctor choose a condition, the antibiotic listed must only the ones that can be used for that conditions."
+  // Filter antibiotics strictly to this condition
   DOM.antibioticSelect.innerHTML = '';
 
-  const firstLines = AppState.activeCondition.antibiotics.filter(a => a.type === 'first_line');
-  const alternatives = AppState.activeCondition.antibiotics.filter(a => a.type !== 'first_line');
+  const antibiotics = AppState.activeCondition.antibiotics || [];
+  const firstLines = [];
+  const alternatives = [];
+
+  antibiotics.forEach((a, idx) => {
+    if (a.type === 'first_line') firstLines.push({ item: a, idx });
+    else alternatives.push({ item: a, idx });
+  });
 
   if (firstLines.length > 0) {
     const optgroupFirst = document.createElement('optgroup');
     optgroupFirst.label = 'PREFERRED / FIRST-LINE REGIMENS';
-    firstLines.forEach(a => {
+    firstLines.forEach(({ item, idx }) => {
       const opt = document.createElement('option');
-      opt.value = a.antibioticId;
-      opt.textContent = a.label;
+      opt.value = idx;
+      opt.textContent = item.label;
       optgroupFirst.appendChild(opt);
     });
     DOM.antibioticSelect.appendChild(optgroupFirst);
@@ -350,38 +421,43 @@ function onConditionChange() {
   if (alternatives.length > 0) {
     const optgroupAlt = document.createElement('optgroup');
     optgroupAlt.label = 'ALTERNATIVE / SECOND-LINE / ALLERGY';
-    alternatives.forEach(a => {
+    alternatives.forEach(({ item, idx }) => {
       const opt = document.createElement('option');
-      opt.value = a.antibioticId;
-      opt.textContent = a.label;
+      opt.value = idx;
+      opt.textContent = item.label;
       optgroupAlt.appendChild(opt);
     });
     DOM.antibioticSelect.appendChild(optgroupAlt);
   }
 
-  // Set first antibiotic
-  if (AppState.activeCondition.antibiotics.length > 0) {
-    DOM.antibioticSelect.value = AppState.activeCondition.antibiotics[0].antibioticId;
+  if (antibiotics.length > 0) {
+    DOM.antibioticSelect.value = 0;
   }
 
   onAntibioticChange();
 }
 
 function onAntibioticChange() {
-  if (!AppState.activeCondition) return;
+  if (!AppState.activeCondition || !AppState.activeCondition.antibiotics || AppState.activeCondition.antibiotics.length === 0) return;
 
-  const abxId = DOM.antibioticSelect.value;
-  const conditionAbxRule = AppState.activeCondition.antibiotics.find(a => a.antibioticId === abxId);
-  const masterAbx = AppState.antibiotics.find(a => a.id === abxId);
+  const regIdx = parseInt(DOM.antibioticSelect.value) || 0;
+  const conditionAbxRule = AppState.activeCondition.antibiotics[regIdx] || AppState.activeCondition.antibiotics[0];
+  if (!conditionAbxRule) return;
+
+  const masterAbx = AppState.antibiotics.find(a => a.id === conditionAbxRule.antibioticId) || {
+    id: conditionAbxRule.antibioticId,
+    name: conditionAbxRule.label,
+    aware: 'Access',
+    routes: [conditionAbxRule.route || 'Oral / IV'],
+    formulations: [{ name: 'Standard Preparation', mgPerMl: null, unit: 'mg', type: 'standard' }]
+  };
 
   AppState.activeAntibiotic = {
     rule: conditionAbxRule,
     master: masterAbx
   };
 
-  if (!conditionAbxRule || !masterAbx) return;
-
-  // Update Line Badge (First line vs Alternative)
+  // Update Line Badge
   if (conditionAbxRule.type === 'first_line') {
     DOM.antibioticLineBadge.className = 'badge-line badge-first-line';
     DOM.antibioticLineBadge.textContent = 'Preferred First-Line';
@@ -417,6 +493,26 @@ function recalculate() {
   const formIdx = parseInt(DOM.formulationSelect.value) || 0;
   const formulation = master.formulations[formIdx] || master.formulations[0];
   AppState.activeFormulation = formulation;
+
+  // Handle supportive care or viral conditions where no antibiotic is needed
+  if (rule.antibioticId === 'supportive_care' || (rule.minDosePerKgDay === 0 && rule.maxDosePerKgDay === 0)) {
+    DOM.awareClassificationBadge.className = 'aware-tag aware-access';
+    DOM.awareClassificationBadge.innerHTML = 'WHO AWaRe: ACCESS / STEWARDSHIP';
+    DOM.routeHeroTag.textContent = 'Supportive Care';
+    DOM.singleDoseMg.textContent = '0';
+    DOM.dailyDoseMg.textContent = 'Supportive Only';
+    DOM.dosingFrequency.textContent = 'PRN (As required)';
+    DOM.treatmentDuration.textContent = 'Symptom resolution';
+    DOM.calculatedMgPerKg.textContent = '0 mg/kg (No antibiotics)';
+    DOM.liquidVolumeBlock.classList.add('hidden');
+    DOM.safetyGuardrailBox.className = 'alert-box alert-safe';
+    DOM.safetyAlertTitle.textContent = 'Antimicrobial Stewardship Protocol';
+    DOM.safetyAlertDesc.textContent = 'No routine antibiotic indicated per MOH NAG 2024. Supportive therapy, antipyresis, and clinical observation recommended.';
+    DOM.syringeAdviceText.innerHTML = `<strong>Antimicrobial Stewardship:</strong> Explain to caregiver that viral/supportive etiology does not respond to antibiotics. Emphasize hydration, oral antipyretics (Paracetamol 15mg/kg PRN), and red flag advice.`;
+    DOM.administrationNotes.textContent = 'Supportive hydration, nutrition and red flag monitoring.';
+    DOM.conditionCommentsText.textContent = AppState.activeCondition.comments || rule.notes || 'Treatment mainly supportive.';
+    return;
+  }
 
   // AWaRe badge update
   const aware = master.aware || 'Access';
@@ -672,6 +768,43 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
+const ADULT_NAG_URLS = {
+  'A1': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a1-cardiovascular-infections',
+  'A2': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a2-central-nervous-infections',
+  'A3': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a3-chemoprophyxlaxis',
+  'A4': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a4-gastrointestinal-infections',
+  'A5': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a5-infections-in-immunocompromised-patients',
+  'A6': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a6-obstetrics-gyneacological-infections',
+  'A7': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a7-ocular-infections',
+  'A8': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a8-oraldental-infections',
+  'A9': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a9-orthopaedic-infections',
+  'A10': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a10-otorhinolaryngology-infections',
+  'A11': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a11-respiratory-infections',
+  'A12': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a12-sepsis',
+  'A13': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a13-sexually-transmitted-infections',
+  'A14': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a14-skin-soft-tissue-infections',
+  'A15': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a15-trauma-related-infections',
+  'A16': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a16-tropical-infections',
+  'A17': 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult/a17-urinary-tract-infections'
+};
+
+const PAEDS_NAG_URLS = {
+  'B1': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b1-cardiovascular-infections?authuser=0',
+  'B2': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b2-central-nervous-infections?authuser=0',
+  'B3': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b3-chemoprophylaxis?authuser=0',
+  'B4': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b4-gastrointestinal-infections?authuser=0',
+  'B5': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b5-infections-in-immunocompromised-patients?authuser=0',
+  'B6': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b6-neonatal-infections?authuser=0',
+  'B7': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b7-ocular-infections?authuser=0',
+  'B8': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b8-orthopaedic-infections?authuser=0',
+  'B9': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b9-otorhinolaryngology-infections?authuser=0',
+  'B10': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b10-respiratory-infections?authuser=0',
+  'B11': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b11-skin-soft-tissue-infections?authuser=0',
+  'B12': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b12-tropical-infections?authuser=0',
+  'B13': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b13-urinary-tract-infections?authuser=0',
+  'B14': 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics/b14-vascular-infections?authuser=0'
+};
+
 let currentAdultSec = 'all';
 let currentAdultQuery = '';
 
@@ -738,7 +871,6 @@ function renderAdultConditions(list) {
     return;
   }
 
-  // Display first 50 items for smooth performance, with load-more if all selected
   const displayLimit = (currentAdultSec === 'all' && !currentAdultQuery) ? 50 : list.length;
   const itemsToRender = list.slice(0, displayLimit);
 
@@ -746,7 +878,6 @@ function renderAdultConditions(list) {
     const card = document.createElement('div');
     card.className = 'adult-condition-card';
 
-    // Criteria / Assessment
     let criteriaHtml = '';
     if (item.clinicalCriteria) {
       criteriaHtml = `
@@ -757,7 +888,6 @@ function renderAdultConditions(list) {
       `;
     }
 
-    // Common organisms
     let organismHtml = '';
     if (item.commonOrganisms) {
       organismHtml = `
@@ -768,7 +898,6 @@ function renderAdultConditions(list) {
       `;
     }
 
-    // Preferred Regimens
     let prefHtml = '';
     if (item.preferred && item.preferred.length > 0) {
       prefHtml = `
@@ -782,7 +911,6 @@ function renderAdultConditions(list) {
       `;
     }
 
-    // Alternative Regimens
     let altHtml = '';
     if (item.alternative && item.alternative.length > 0) {
       altHtml = `
@@ -793,7 +921,6 @@ function renderAdultConditions(list) {
       `;
     }
 
-    // Penicillin / Antibiotic Allergy
     let allergyHtml = '';
     if (item.allergy && item.allergy.length > 0) {
       allergyHtml = `
@@ -804,7 +931,6 @@ function renderAdultConditions(list) {
       `;
     }
 
-    // Comments & Duration
     let commentsHtml = '';
     if (item.comments) {
       commentsHtml = `
@@ -815,7 +941,6 @@ function renderAdultConditions(list) {
       `;
     }
 
-    // Verbatim uncut NAG text collapsible
     let verbatimHtml = '';
     if (item.verbatimText) {
       verbatimHtml = `
@@ -825,6 +950,8 @@ function renderAdultConditions(list) {
         </details>
       `;
     }
+
+    const nagUrl = ADULT_NAG_URLS[item.sectionCode] || 'https://sites.google.com/moh.gov.my/nag/contents/section-a-adult';
 
     card.innerHTML = `
       <div>
@@ -845,9 +972,14 @@ function renderAdultConditions(list) {
         ${verbatimHtml}
       </div>
 
-      <button class="copy-adult-rx-btn" data-adult-id="${item.id}">
-        📋 Copy Complete Clinical Note
-      </button>
+      <div class="pathway-btn-row" style="margin-top:0.85rem;">
+        <a href="${nagUrl}" target="_blank" rel="noopener" class="open-nag-btn">
+          🔗 Open in Official NAG (${item.sectionCode}) ↗
+        </a>
+        <button class="btn-secondary copy-adult-rx-btn" data-adult-id="${item.id}" style="padding:0.6rem 0.85rem;font-size:0.8rem;font-weight:700;">
+          📋 Copy Note
+        </button>
+      </div>
     `;
 
     card.querySelector('.copy-adult-rx-btn').addEventListener('click', () => {
@@ -862,10 +994,11 @@ function renderAdultConditions(list) {
       if (item.alternative && item.alternative.length > 0) rxLines.push(`Alternative:\n${item.alternative.join('\n')}`);
       if (item.allergy && item.allergy.length > 0) rxLines.push(`Allergy:\n${item.allergy.join('\n')}`);
       if (item.comments) rxLines.push(`Comments:\n${item.comments}`);
+      rxLines.push(`Official NAG: ${nagUrl}`);
       rxLines.push(`Reference: MOH Malaysia NAG 2024 (faithx)`);
 
       navigator.clipboard.writeText(rxLines.join('\n\n')).then(() => {
-        showToast(`Copied complete clinical note for ${item.title}! 📋`);
+        showToast(`Copied note for ${item.title}! 📋`);
       });
     });
 
@@ -890,6 +1023,328 @@ function renderAdultConditions(list) {
     moreBtnWrap.appendChild(moreBtn);
     DOM.adultConditionsContainer.appendChild(moreBtnWrap);
   }
+}
+
+/* ==========================================================================
+   Paediatric Toolkit (Section B1 to B14 - Complete Verbatim NAG 2024)
+   ========================================================================== */
+let currentPaedSec = 'all';
+let currentPaedQuery = '';
+
+function initPaediatricToolkit() {
+  if (AppState.paediatricAllConditions && AppState.paediatricAllConditions.length > 0) {
+    renderPaediatricConditions(AppState.paediatricAllConditions);
+  }
+
+  if (DOM.guidelineSearchInput) {
+    DOM.guidelineSearchInput.addEventListener('input', () => {
+      currentPaedQuery = DOM.guidelineSearchInput.value.toLowerCase().trim();
+      filterPaediatricConditions();
+    });
+  }
+
+  if (DOM.paedFilterBtns) {
+    DOM.paedFilterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        DOM.paedFilterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentPaedSec = btn.getAttribute('data-paed-sec') || 'all';
+        filterPaediatricConditions();
+      });
+    });
+  }
+}
+
+function filterPaediatricConditions() {
+  let list = AppState.paediatricAllConditions || [];
+
+  if (currentPaedSec !== 'all') {
+    list = list.filter(c => 
+      c.sectionCode === currentPaedSec ||
+      (c.category && c.category.toLowerCase().includes(currentPaedSec.toLowerCase()))
+    );
+  }
+
+  if (currentPaedQuery) {
+    const q = currentPaedQuery;
+    list = list.filter(c =>
+      (c.title && c.title.toLowerCase().includes(q)) ||
+      (c.parentTopic && c.parentTopic.toLowerCase().includes(q)) ||
+      (c.sectionName && c.sectionName.toLowerCase().includes(q)) ||
+      (c.category && c.category.toLowerCase().includes(q)) ||
+      (c.commonOrganisms && c.commonOrganisms.toLowerCase().includes(q)) ||
+      (c.clinicalCriteria && c.clinicalCriteria.toLowerCase().includes(q)) ||
+      (c.preferred && c.preferred.some(p => p.toLowerCase().includes(q))) ||
+      (c.alternative && c.alternative.some(a => a.toLowerCase().includes(q))) ||
+      (c.allergy && c.allergy.some(al => al.toLowerCase().includes(q))) ||
+      (c.comments && c.comments.toLowerCase().includes(q)) ||
+      (c.verbatimText && c.verbatimText.toLowerCase().includes(q))
+    );
+  }
+
+  renderPaediatricConditions(list);
+}
+
+function renderPaediatricConditions(list) {
+  if (!DOM.guidelinesContainer) return;
+  DOM.guidelinesContainer.innerHTML = '';
+
+  if (!list || list.length === 0) {
+    DOM.guidelinesContainer.innerHTML = `
+      <div style="grid-column: 1/-1; text-align:center; padding: 3rem; color: var(--text-muted);">
+        <p style="font-size: 1.2rem;">No matching paediatric condition found.</p>
+        <p style="font-size: 0.85rem;">Try another search term or reset filters.</p>
+      </div>
+    `;
+    return;
+  }
+
+  list.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'adult-condition-card';
+
+    let criteriaHtml = '';
+    if (item.clinicalCriteria) {
+      criteriaHtml = `
+        <div class="acc-criteria-box">
+          <strong>📋 Clinical Assessment / Criteria:</strong><br>
+          ${escapeHtml(item.clinicalCriteria).replace(/\n/g, '<br>')}
+        </div>
+      `;
+    }
+
+    let organismHtml = '';
+    if (item.commonOrganisms) {
+      organismHtml = `
+        <p class="acc-organism">
+          <strong>🦠 Common Pathogens:</strong><br>
+          ${escapeHtml(item.commonOrganisms).replace(/\n/g, '<br>')}
+        </p>
+      `;
+    }
+
+    let prefHtml = '';
+    if (item.preferred && item.preferred.length > 0) {
+      prefHtml = `
+        <div class="acc-preferred-box">
+          <div class="acc-pref-label">
+            <span>⭐ Preferred First-Line Choice</span>
+            <span class="aware-tag aware-access" style="font-size:0.65rem;padding:2px 6px;">NAG Paeds Preferred</span>
+          </div>
+          ${item.preferred.map(p => `<div class="acc-pref-drug">${escapeHtml(p)}</div>`).join('')}
+        </div>
+      `;
+    }
+
+    let altHtml = '';
+    if (item.alternative && item.alternative.length > 0) {
+      altHtml = `
+        <div class="acc-alt-box">
+          <div class="acc-alt-label">🔄 Alternative Regimens:</div>
+          ${item.alternative.map(a => `<div class="acc-alt-item">${escapeHtml(a)}</div>`).join('')}
+        </div>
+      `;
+    }
+
+    let allergyHtml = '';
+    if (item.allergy && item.allergy.length > 0) {
+      allergyHtml = `
+        <div class="acc-allergy-box">
+          <div class="acc-allergy-label">⚠️ Penicillin / Antibiotic Allergy:</div>
+          ${item.allergy.map(al => `<div class="acc-alt-item">${escapeHtml(al)}</div>`).join('')}
+        </div>
+      `;
+    }
+
+    let commentsHtml = '';
+    if (item.comments) {
+      commentsHtml = `
+        <div class="acc-comments">
+          <strong>💡 Comments &amp; Duration:</strong><br>
+          ${escapeHtml(item.comments).replace(/\n/g, '<br>')}
+        </div>
+      `;
+    }
+
+    let verbatimHtml = '';
+    if (item.verbatimText) {
+      verbatimHtml = `
+        <details class="acc-raw-details">
+          <summary>📄 View Full Verbatim NAG Text</summary>
+          <pre class="acc-raw-pre">${escapeHtml(item.verbatimText)}</pre>
+        </details>
+      `;
+    }
+
+    const nagUrl = PAEDS_NAG_URLS[item.sectionCode] || 'https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics?authuser=0';
+
+    card.innerHTML = `
+      <div>
+        <div class="acc-header">
+          <div>
+            <h3 class="acc-title">${escapeHtml(item.title)}</h3>
+            ${item.parentTopic && item.parentTopic !== item.title ? `<div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">📁 ${escapeHtml(item.parentTopic)}</div>` : ''}
+          </div>
+          <span class="acc-category" style="background:rgba(14, 165, 233, 0.15);color:var(--primary);">${item.sectionCode}: ${item.category}</span>
+        </div>
+
+        ${criteriaHtml}
+        ${organismHtml}
+        ${prefHtml}
+        ${altHtml}
+        ${allergyHtml}
+        ${commentsHtml}
+        ${verbatimHtml}
+      </div>
+
+      <div class="pathway-btn-row" style="margin-top:0.85rem;">
+        <a href="${nagUrl}" target="_blank" rel="noopener" class="open-nag-btn">
+          🔗 Open in Official NAG (${item.sectionCode}) ↗
+        </a>
+        <button class="btn-secondary copy-paed-note-btn" style="padding:0.6rem 0.85rem;font-size:0.8rem;font-weight:700;">
+          📋 Copy Note
+        </button>
+      </div>
+    `;
+
+    card.querySelector('.copy-paed-note-btn').addEventListener('click', () => {
+      const rxLines = [
+        `=== MOH NAG 2024 Paediatric Guideline ===`,
+        `Condition: ${item.title}`,
+        `Section: ${item.sectionCode} - ${item.sectionName}`
+      ];
+      if (item.commonOrganisms) rxLines.push(`Pathogens:\n${item.commonOrganisms}`);
+      if (item.clinicalCriteria) rxLines.push(`Criteria:\n${item.clinicalCriteria}`);
+      if (item.preferred && item.preferred.length > 0) rxLines.push(`Preferred:\n${item.preferred.join('\n')}`);
+      if (item.alternative && item.alternative.length > 0) rxLines.push(`Alternative:\n${item.alternative.join('\n')}`);
+      if (item.allergy && item.allergy.length > 0) rxLines.push(`Allergy:\n${item.allergy.join('\n')}`);
+      if (item.comments) rxLines.push(`Comments:\n${item.comments}`);
+      rxLines.push(`Official NAG: ${nagUrl}`);
+      rxLines.push(`Reference: MOH Malaysia NAG 2024 (faithx)`);
+
+      navigator.clipboard.writeText(rxLines.join('\n\n')).then(() => {
+        showToast(`Copied note for ${item.title}! 📋`);
+      });
+    });
+
+    DOM.guidelinesContainer.appendChild(card);
+  });
+}
+
+/* ==========================================================================
+   Clinical Pathways in Primary Care (Section C1 - C9 Flowcharts)
+   ========================================================================== */
+let currentPathwayFilter = 'all';
+
+function initPathways() {
+  if (AppState.pathways && AppState.pathways.length > 0) {
+    renderPathways(AppState.pathways);
+  }
+
+  if (DOM.pathwayFilterBtns) {
+    DOM.pathwayFilterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        DOM.pathwayFilterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentPathwayFilter = btn.getAttribute('data-pathway-code') || 'all';
+        filterPathways();
+      });
+    });
+  }
+
+  // Modal events
+  if (DOM.closePathwayModalBtn) {
+    DOM.closePathwayModalBtn.addEventListener('click', closePathwayModal);
+  }
+  if (DOM.pathwayModalOverlay) {
+    DOM.pathwayModalOverlay.addEventListener('click', closePathwayModal);
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && DOM.pathwayModal && !DOM.pathwayModal.classList.contains('hidden')) {
+      closePathwayModal();
+    }
+  });
+}
+
+function filterPathways() {
+  let list = AppState.pathways || [];
+  if (currentPathwayFilter !== 'all') {
+    list = list.filter(p => p.code === currentPathwayFilter);
+  }
+  renderPathways(list);
+}
+
+function renderPathways(list) {
+  if (!DOM.pathwaysContainer) return;
+  DOM.pathwaysContainer.innerHTML = '';
+
+  if (!list || list.length === 0) {
+    DOM.pathwaysContainer.innerHTML = `
+      <div style="grid-column: 1/-1; text-align:center; padding: 3rem; color: var(--text-muted);">
+        <p style="font-size: 1.2rem;">No matching clinical pathway found.</p>
+      </div>
+    `;
+    return;
+  }
+
+  list.forEach(pw => {
+    const card = document.createElement('div');
+    card.className = 'pathway-card';
+
+    const imgPath = `images/pathways/${pw.filename}`;
+
+    card.innerHTML = `
+      <div class="pathway-img-wrap" data-img="${imgPath}" data-title="${pw.title}" data-nag="${pw.nagUrl}" data-drive="${pw.embedUrl}">
+        <img src="${imgPath}" alt="${pw.title}" class="pathway-thumb-img" loading="lazy" onerror="this.src='images/pathways/C1_pathway_1.png'">
+        <div class="pathway-zoom-badge">
+          <span>🔍</span> Tap to Enlarge Flowchart
+        </div>
+      </div>
+      <div class="pathway-content">
+        <div>
+          <h3 class="pathway-card-title">${pw.title}</h3>
+          <p class="pathway-card-desc">${pw.summary}</p>
+        </div>
+        <div class="pathway-btn-row">
+          <button class="btn-primary view-flowchart-btn" data-img="${imgPath}" data-title="${pw.title}" data-nag="${pw.nagUrl}" data-drive="${pw.embedUrl}" style="flex:1;min-width:140px;padding:0.6rem 0.85rem;font-size:0.8rem;">
+            🔍 View Full Flowchart
+          </button>
+          <a href="${pw.nagUrl}" target="_blank" rel="noopener" class="open-nag-btn" style="flex:1;min-width:140px;">
+            🔗 Open in NAG ↗
+          </a>
+          <a href="${pw.embedUrl}" target="_blank" rel="noopener" class="btn-secondary" style="padding:0.6rem 0.85rem;font-size:0.8rem;font-weight:700;">
+            📄 PDF
+          </a>
+        </div>
+      </div>
+    `;
+
+    // Click on image or button opens modal
+    const openModalHandler = () => {
+      openPathwayModal(pw.title, imgPath, pw.nagUrl, pw.embedUrl);
+    };
+
+    card.querySelector('.pathway-img-wrap').addEventListener('click', openModalHandler);
+    card.querySelector('.view-flowchart-btn').addEventListener('click', openModalHandler);
+
+    DOM.pathwaysContainer.appendChild(card);
+  });
+}
+
+function openPathwayModal(title, imgSrc, nagUrl, driveUrl) {
+  if (!DOM.pathwayModal) return;
+  DOM.modalPathwayTitle.textContent = title;
+  DOM.modalPathwayImg.src = imgSrc;
+  DOM.modalNagLink.href = nagUrl;
+  DOM.modalDriveLink.href = driveUrl;
+  DOM.pathwayModal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePathwayModal() {
+  if (!DOM.pathwayModal) return;
+  DOM.pathwayModal.classList.add('hidden');
+  document.body.style.overflow = '';
 }
 
 function recalculateCrcl() {

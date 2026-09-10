@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NAG 2024 Paediatric Antibiotics Toolkit & Dosing Calculator</title>
-  <meta name="description" content="Clinical Antibiotic Toolkit & Paediatric Dosing Calculator based on MOH Malaysia NAG 2024 with live updates tracking. Created by fathirosli.">
+  <title>NAG 2024 ANTIBIOTICS TOOLKIT & CALCULATOR</title>
+  <meta name="description" content="NAG 2024 ANTIBIOTICS TOOLKIT & CALCULATOR - Complete Clinical Antibiotic Toolkit & Dosing Calculator based on MOH Malaysia NAG 2024. Created by faithx.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
           <span class="nag-tag">NAG 2024</span>
         </div>
         <div class="brand-text">
-          <h1>NAG Paediatric Antibiotics Toolkit & Calculator</h1>
+          <h1>NAG 2024 ANTIBIOTICS TOOLKIT &amp; CALCULATOR</h1>
           <p class="brand-subtitle">
             Based on MOH Malaysia National Antimicrobial Guideline • <span class="creator-badge">Created by <strong>faithx</strong></span>
           </p>
@@ -53,15 +53,19 @@
         </button>
         <button class="nav-tab" data-tab="adultTab">
           <span class="tab-icon">🧑</span>
-          <span class="tab-label">Adult Antibiotics</span>
-        </button>
-        <button class="nav-tab" data-tab="neonatalTab">
-          <span class="tab-icon">👶</span>
-          <span class="tab-label">Neonatal Regimens</span>
+          <span class="tab-label">Adult Toolkit</span>
         </button>
         <button class="nav-tab" data-tab="guidelinesTab">
           <span class="tab-icon">📚</span>
           <span class="tab-label">Paediatric Toolkit</span>
+        </button>
+        <button class="nav-tab" data-tab="pathwaysTab">
+          <span class="tab-icon">🗺️</span>
+          <span class="tab-label">Clinical Pathways (Sec C)</span>
+        </button>
+        <button class="nav-tab" data-tab="neonatalTab">
+          <span class="tab-icon">👶</span>
+          <span class="tab-label">Neonatal Regimens</span>
         </button>
         <button class="nav-tab" data-tab="toolsTab">
           <span class="tab-icon">⚖️</span>
@@ -137,7 +141,10 @@
 
             <!-- Clinical Condition Selection -->
             <div class="form-group">
-              <label for="conditionSelect">Clinical Condition / Diagnosis</label>
+              <label for="conditionSelect">Clinical Condition / Diagnosis (Section B1 to B14)</label>
+              <div style="margin-bottom:0.45rem;">
+                <input type="text" id="conditionSearchInput" placeholder="🔍 Quick search 140 conditions (e.g. tonsillitis, otitis, pneumonia, UTI, meningitis)..." style="width:100%;font-size:0.85rem;padding:0.55rem 0.75rem;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text-main);">
+              </div>
               <div class="select-wrapper">
                 <select id="conditionSelect">
                   <option value="" disabled>-- Select Clinical Indication --</option>
@@ -299,6 +306,9 @@
             <button id="printPrescriptionBtn" class="btn-secondary">
               🖨️ Print Dosing Summary
             </button>
+            <a id="calcOpenNagBtn" href="https://sites.google.com/moh.gov.my/nag/contents/section-b-paediatrics?authuser=0" target="_blank" rel="noopener" class="open-nag-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; padding:0.75rem 1rem; border-radius:var(--radius-md);">
+              🔗 Open in Official NAG ↗
+            </a>
           </div>
 
         </div>
@@ -307,13 +317,13 @@
     </section>
 
     <!-- ============================================================== -->
-    <!-- TAB: ADULT ANTIBIOTICS OF CHOICE (NAG 2024 Section A)          -->
+    <!-- TAB 2: ADULT TOOLKIT (NAG 2024 Section A1 to A17)              -->
     <!-- ============================================================== -->
     <section id="adultTab" class="tab-content">
       <div class="adult-header-banner">
         <div class="adult-header-text">
-          <h2>🧑 Adult Empiric Antibiotics of Choice (NAG 2024)</h2>
-          <p>Instant, complete verbatim guidelines across all 17 adult sections (A1 to A17) without slow page loads.</p>
+          <h2>🧑 Adult Toolkit (NAG 2024 Section A)</h2>
+          <p>Instant, complete verbatim guidelines across all 17 adult sections (A1 to A17) with 1-click links to official NAG.</p>
         </div>
         <div class="adult-quick-stats">
           <span class="stat-pill">⚡ 497 Clinical Conditions</span>
@@ -324,7 +334,7 @@
       <div class="adult-top-bar">
         <div class="search-box-wrap">
           <span class="search-icon">🔍</span>
-          <input type="text" id="adultSearchInput" placeholder="Instant search: e.g. tonsillitis, quinsy, CAP, nitrofurantoin, cellulitis, UTI, meningitis, sepsis, syphilis...">
+          <input type="text" id="adultSearchInput" placeholder="Instant search adult conditions: e.g. tonsillitis, quinsy, CAP, nitrofurantoin, cellulitis, UTI, meningitis, sepsis, syphilis...">
         </div>
         <div class="filter-group adult-filter-group">
           <button class="filter-btn active" data-adult-sec="all">All (497)</button>
@@ -354,7 +364,87 @@
     </section>
 
     <!-- ============================================================== -->
-    <!-- TAB 2: NEONATAL SUB-CALCULATOR (Gestational & Postnatal Stratified)-->
+    <!-- TAB 3: PAEDIATRIC TOOLKIT (NAG 2024 Section B1 to B14)         -->
+    <!-- ============================================================== -->
+    <section id="guidelinesTab" class="tab-content">
+      <div class="adult-header-banner" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(16, 185, 129, 0.08)); border-color: rgba(14, 165, 233, 0.3);">
+        <div class="adult-header-text">
+          <h2>📚 Paediatric Toolkit (NAG 2024 Section B1 - B14)</h2>
+          <p>Extensive clinical guidance across all 14 paediatric specialties. Filtered and linked directly to official NAG pages.</p>
+        </div>
+        <div class="adult-quick-stats">
+          <span class="stat-pill" style="background:var(--primary-subtle);color:var(--primary);">⚡ 129 Paediatric Conditions</span>
+          <span class="stat-pill">🏥 Complete Section B (B1 - B14)</span>
+        </div>
+      </div>
+
+      <div class="guidelines-top-bar">
+        <div class="search-box-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="guidelineSearchInput" placeholder="Search paediatric conditions: e.g. Pharyngitis, Pneumonia, Empyema, Meningitis, Septic Arthritis, Dysentery, Melioidosis...">
+        </div>
+        <div class="filter-group adult-filter-group" id="paedFilterGroup">
+          <button class="filter-btn active" data-paed-sec="all">All (129)</button>
+          <button class="filter-btn" data-paed-sec="B1">B1: Cardio (11)</button>
+          <button class="filter-btn" data-paed-sec="B2">B2: CNS (8)</button>
+          <button class="filter-btn" data-paed-sec="B3">B3: Prophylaxis (41)</button>
+          <button class="filter-btn" data-paed-sec="B4">B4: GI (7)</button>
+          <button class="filter-btn" data-paed-sec="B5">B5: Immunocompromised (3)</button>
+          <button class="filter-btn" data-paed-sec="B6">B6: Neonatal (16)</button>
+          <button class="filter-btn" data-paed-sec="B7">B7: Ocular (1)</button>
+          <button class="filter-btn" data-paed-sec="B8">B8: Orthopaedic (1)</button>
+          <button class="filter-btn" data-paed-sec="B9">B9: ENT (4)</button>
+          <button class="filter-btn" data-paed-sec="B10">B10: Respiratory (2)</button>
+          <button class="filter-btn" data-paed-sec="B11">B11: SSTI (6)</button>
+          <button class="filter-btn" data-paed-sec="B12">B12: Tropical (17)</button>
+          <button class="filter-btn" data-paed-sec="B13">B13: UTI (1)</button>
+          <button class="filter-btn" data-paed-sec="B14">B14: Vascular (11)</button>
+        </div>
+      </div>
+
+      <!-- Guidelines Grid -->
+      <div id="guidelinesContainer" class="adult-cards-grid">
+        <!-- Rendered dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 4: CLINICAL PATHWAYS IN PRIMARY CARE (NAG Section C1 - C9) -->
+    <!-- ============================================================== -->
+    <section id="pathwaysTab" class="tab-content">
+      <div class="adult-header-banner" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(13, 148, 136, 0.08)); border-color: rgba(245, 158, 11, 0.3);">
+        <div class="adult-header-text">
+          <h2>🗺️ Clinical Pathways in Primary Care (NAG 2024 Section C)</h2>
+          <p>Official MOH diagnostic and treatment flowcharts for primary care clinics. Instant image retrieval with pinch-zoom.</p>
+        </div>
+        <div class="adult-quick-stats">
+          <span class="stat-pill" style="background:rgba(245, 158, 11, 0.15);color:#d97706;">⚡ 9 Clinical Flowcharts</span>
+          <span class="stat-pill">🏥 Section C (C1 to C9)</span>
+        </div>
+      </div>
+
+      <div class="adult-top-bar">
+        <div class="filter-group adult-filter-group" id="pathwayFilterGroup">
+          <button class="filter-btn active" data-pathway-code="all">All Pathways (9)</button>
+          <button class="filter-btn" data-pathway-code="C1">C1: Bronchitis &amp; Pneumonia</button>
+          <button class="filter-btn" data-pathway-code="C2">C2: Otitis Media</button>
+          <button class="filter-btn" data-pathway-code="C3">C3: Pharyngitis</button>
+          <button class="filter-btn" data-pathway-code="C4">C4: Rhinosinusitis</button>
+          <button class="filter-btn" data-pathway-code="C5">C5: Gastroenteritis</button>
+          <button class="filter-btn" data-pathway-code="C6">C6: Skin &amp; SSTI</button>
+          <button class="filter-btn" data-pathway-code="C7">C7: UTI Non-Pregnancy</button>
+          <button class="filter-btn" data-pathway-code="C8">C8: ABU in Pregnancy</button>
+          <button class="filter-btn" data-pathway-code="C9">C9: Symptomatic UTI Pregnancy</button>
+        </div>
+      </div>
+
+      <div id="pathwaysContainer" class="pathways-grid">
+        <!-- Rendered dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 5: NEONATAL SUB-CALCULATOR (Gestational & Postnatal Stratified)-->
     <!-- ============================================================== -->
     <section id="neonatalTab" class="tab-content">
       <div class="neonatal-header-card">
@@ -479,40 +569,6 @@
             📋 Copy Neonatal Prescription Note
           </button>
         </div>
-      </div>
-    </section>
-
-
-    <!-- ============================================================== -->
-    <!-- TAB 3: NAG 2024 TOOLKIT & GUIDELINES BROWSER                   -->
-    <!-- ============================================================== -->
-    <section id="guidelinesTab" class="tab-content">
-      <div class="guidelines-top-bar">
-        <div class="search-box-wrap">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="guidelineSearchInput" placeholder="Search by condition, antibiotic, organism, or keyword (e.g. Sepsis, Meningitis, Amoxicillin, UTI)...">
-        </div>
-        <div class="filter-group">
-          <button class="filter-btn active" data-category="all">All (32)</button>
-          <button class="filter-btn" data-category="ENT">ENT / Pharyngitis</button>
-          <button class="filter-btn" data-category="Respiratory">Respiratory</button>
-          <button class="filter-btn" data-category="Urinary">UTI</button>
-          <button class="filter-btn" data-category="Central Nervous">CNS / Meningitis</button>
-          <button class="filter-btn" data-category="Orthopaedic">Bone &amp; Joint</button>
-          <button class="filter-btn" data-category="Skin">Skin &amp; SSTI</button>
-          <button class="filter-btn" data-category="Gastrointestinal">GIT / Dysentery</button>
-          <button class="filter-btn" data-category="Cardiovascular">Cardio / IE</button>
-          <button class="filter-btn" data-category="Chemoprophylaxis">Prophylaxis</button>
-          <button class="filter-btn" data-category="Neonatal">Neonatal</button>
-          <button class="filter-btn" data-category="Immunocompromised">Febrile Neutropenia</button>
-          <button class="filter-btn" data-category="Tropical">Tropical</button>
-          <button class="filter-btn" data-category="Vascular">Vascular / Sepsis</button>
-        </div>
-      </div>
-
-      <!-- Guidelines Grid -->
-      <div id="guidelinesContainer" class="guidelines-card-grid">
-        <!-- Rendered via JS -->
       </div>
     </section>
 
@@ -739,6 +795,27 @@
       </div>
     </div>
   </footer>
+
+  <!-- Pathway Image Lightbox Modal -->
+  <div id="pathwayModal" class="pathway-modal hidden">
+    <div class="pathway-modal-overlay" id="pathwayModalOverlay"></div>
+    <div class="pathway-modal-dialog">
+      <div class="pathway-modal-header">
+        <div>
+          <h3 id="modalPathwayTitle" style="font-size:1.1rem;font-weight:800;color:var(--text-primary);">Clinical Pathway Flowchart</h3>
+          <span id="modalPathwaySub" style="font-size:0.75rem;color:var(--text-muted);">MOH Malaysia NAG 2024 Section C</span>
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <a id="modalDriveLink" href="#" target="_blank" rel="noopener" class="btn-secondary" style="font-size:0.78rem;padding:4px 10px;">📄 Full PDF</a>
+          <a id="modalNagLink" href="#" target="_blank" rel="noopener" class="btn-secondary" style="font-size:0.78rem;padding:4px 10px;">🔗 Open NAG</a>
+          <button id="closePathwayModalBtn" class="icon-btn" title="Close" style="background:var(--bg-subtle);">✕</button>
+        </div>
+      </div>
+      <div class="pathway-modal-body">
+        <img id="modalPathwayImg" src="" alt="Clinical Pathway Flowchart" class="pathway-lightbox-img">
+      </div>
+    </div>
+  </div>
 
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>

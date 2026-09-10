@@ -108,6 +108,30 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (pathname === '/api/paediatric-conditions') {
+    try {
+      const data = fs.readFileSync(path.join(PUBLIC_DIR, 'data', 'paediatric_all_conditions.json'), 'utf8');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(data);
+    } catch (e) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/pathways') {
+    try {
+      const data = fs.readFileSync(path.join(PUBLIC_DIR, 'data', 'pathways.json'), 'utf8');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(data);
+    } catch (e) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   if (pathname === '/api/neonatal') {
     try {
       const data = fs.readFileSync(path.join(PUBLIC_DIR, 'data', 'neonatal.json'), 'utf8');
