@@ -1841,15 +1841,108 @@ body.theme-dark .who-band-card {
   color: var(--primary);
 }
 
-.acc-comments {
-  font-size: 0.75rem;
+.acc-criteria-box {
+  background: rgba(2, 132, 199, 0.06);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
   color: var(--text-secondary);
+}
+
+.acc-criteria-box strong {
+  color: var(--text-primary);
+}
+
+.acc-allergy-box {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px dashed rgba(245, 158, 11, 0.5);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.acc-allergy-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #d97706;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.acc-raw-details {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.5rem;
+}
+
+.acc-raw-details summary {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 0;
+  user-select: none;
+}
+
+.acc-raw-details summary:hover {
+  color: var(--primary);
+}
+
+.acc-raw-pre {
+  margin-top: 0.5rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  font-size: 0.72rem;
   line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 250px;
+  overflow-y: auto;
+  color: var(--text-secondary);
+  font-family: inherit;
+}
+
+.acc-comments {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
   margin-bottom: 0.85rem;
   background: var(--bg-surface-elevated);
-  padding: 0.6rem;
+  padding: 0.65rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
+}
+
+.acc-comments strong {
+  color: var(--text-primary);
+}
+
+.adult-filter-group {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 6px;
+  gap: 0.4rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.adult-filter-group::-webkit-scrollbar {
+  height: 4px;
+}
+
+.adult-filter-group::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 999px;
 }
 
 .copy-adult-rx-btn {

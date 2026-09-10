@@ -102,7 +102,7 @@ function initDOMElements() {
 
   // Adult Guide DOM
   DOM.adultSearchInput = document.getElementById('adultSearchInput');
-  DOM.adultFilterBtns = document.querySelectorAll('[data-adult-cat]');
+  DOM.adultFilterBtns = document.querySelectorAll('[data-adult-sec], [data-adult-cat]');
   DOM.adultConditionsContainer = document.getElementById('adultConditionsContainer');
 
   // Clinical Tools DOM
@@ -660,49 +660,69 @@ Reference: MOH NAG 2024 Section B6 (faithx)`;
 /* ==========================================================================
    Guidelines Browser & Search
    ========================================================================== */
-/* ==========================================================================
-   Adult Antibiotics Guide (Section A)
+/* ================================    Adult Antibiotics Guide (Section A1 to A17 - Verbatim NAG 2024)
    ========================================================================== */
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+let currentAdultSec = 'all';
+let currentAdultQuery = '';
+
 function initAdultGuide() {
   if (AppState.adultConditions && AppState.adultConditions.length > 0) {
     renderAdultConditions(AppState.adultConditions);
   }
 
   DOM.adultSearchInput.addEventListener('input', () => {
-    const q = DOM.adultSearchInput.value.toLowerCase().trim();
-    const activeCat = document.querySelector('[data-adult-cat].active').getAttribute('data-adult-cat');
-    filterAdultConditions(q, activeCat);
+    currentAdultQuery = DOM.adultSearchInput.value.toLowerCase().trim();
+    filterAdultConditions();
   });
 
   DOM.adultFilterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       DOM.adultFilterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      const cat = btn.getAttribute('data-adult-cat');
-      const q = DOM.adultSearchInput.value.toLowerCase().trim();
-      filterAdultConditions(q, cat);
+      currentAdultSec = btn.getAttribute('data-adult-sec') || btn.getAttribute('data-adult-cat') || 'all';
+      filterAdultConditions();
     });
   });
 }
 
-function filterAdultConditions(query, category) {
-  let filtered = AppState.adultConditions;
+function filterAdultConditions() {
+  let list = AppState.adultConditions || [];
 
-  if (category !== 'all') {
-    filtered = filtered.filter(c => c.category.toLowerCase().includes(category.toLowerCase()));
-  }
-
-  if (query) {
-    filtered = filtered.filter(c =>
-      c.name.toLowerCase().includes(query) ||
-      c.category.toLowerCase().includes(query) ||
-      c.organism.toLowerCase().includes(query) ||
-      c.preferred.drug.toLowerCase().includes(query) ||
-      c.alternatives.some(a => a.drug.toLowerCase().includes(query))
+  if (currentAdultSec !== 'all') {
+    list = list.filter(c => 
+      c.sectionCode === currentAdultSec ||
+      (c.category && c.category.toLowerCase().includes(currentAdultSec.toLowerCase()))
     );
   }
 
-  renderAdultConditions(filtered);
+  if (currentAdultQuery) {
+    const q = currentAdultQuery;
+    list = list.filter(c =>
+      (c.title && c.title.toLowerCase().includes(q)) ||
+      (c.parentTopic && c.parentTopic.toLowerCase().includes(q)) ||
+      (c.sectionName && c.sectionName.toLowerCase().includes(q)) ||
+      (c.category && c.category.toLowerCase().includes(q)) ||
+      (c.commonOrganisms && c.commonOrganisms.toLowerCase().includes(q)) ||
+      (c.clinicalCriteria && c.clinicalCriteria.toLowerCase().includes(q)) ||
+      (c.preferred && c.preferred.some(p => p.toLowerCase().includes(q))) ||
+      (c.alternative && c.alternative.some(a => a.toLowerCase().includes(q))) ||
+      (c.allergy && c.allergy.some(al => al.toLowerCase().includes(q))) ||
+      (c.comments && c.comments.toLowerCase().includes(q)) ||
+      (c.verbatimText && c.verbatimText.toLowerCase().includes(q))
+    );
+  }
+
+  renderAdultConditions(list);
 }
 
 function renderAdultConditions(list) {
@@ -718,70 +738,158 @@ function renderAdultConditions(list) {
     return;
   }
 
-  list.forEach(item => {
+  // Display first 50 items for smooth performance, with load-more if all selected
+  const displayLimit = (currentAdultSec === 'all' && !currentAdultQuery) ? 50 : list.length;
+  const itemsToRender = list.slice(0, displayLimit);
+
+  itemsToRender.forEach(item => {
     const card = document.createElement('div');
     card.className = 'adult-condition-card';
 
-    const awareClass = `aware-${(item.preferred.aware || 'Access').toLowerCase()}`;
+    // Criteria / Assessment
+    let criteriaHtml = '';
+    if (item.clinicalCriteria) {
+      criteriaHtml = `
+        <div class="acc-criteria-box">
+          <strong>📋 Clinical Assessment / Criteria:</strong><br>
+          ${escapeHtml(item.clinicalCriteria).replace(/\n/g, '<br>')}
+        </div>
+      `;
+    }
 
-    let altsHtml = item.alternatives.map(a => `
-      <div class="acc-alt-item">
-        <strong>${a.drug}</strong>: ${a.doseText}
-      </div>
-    `).join('');
+    // Common organisms
+    let organismHtml = '';
+    if (item.commonOrganisms) {
+      organismHtml = `
+        <p class="acc-organism">
+          <strong>🦠 Common Pathogens:</strong><br>
+          ${escapeHtml(item.commonOrganisms).replace(/\n/g, '<br>')}
+        </p>
+      `;
+    }
+
+    // Preferred Regimens
+    let prefHtml = '';
+    if (item.preferred && item.preferred.length > 0) {
+      prefHtml = `
+        <div class="acc-preferred-box">
+          <div class="acc-pref-label">
+            <span>⭐ Preferred First-Line Choice</span>
+            <span class="aware-tag aware-access" style="font-size:0.65rem;padding:2px 6px;">NAG Preferred</span>
+          </div>
+          ${item.preferred.map(p => `<div class="acc-pref-drug">${escapeHtml(p)}</div>`).join('')}
+        </div>
+      `;
+    }
+
+    // Alternative Regimens
+    let altHtml = '';
+    if (item.alternative && item.alternative.length > 0) {
+      altHtml = `
+        <div class="acc-alt-box">
+          <div class="acc-alt-label">🔄 Alternative Regimens:</div>
+          ${item.alternative.map(a => `<div class="acc-alt-item">${escapeHtml(a)}</div>`).join('')}
+        </div>
+      `;
+    }
+
+    // Penicillin / Antibiotic Allergy
+    let allergyHtml = '';
+    if (item.allergy && item.allergy.length > 0) {
+      allergyHtml = `
+        <div class="acc-allergy-box">
+          <div class="acc-allergy-label">⚠️ Penicillin / Antibiotic Allergy:</div>
+          ${item.allergy.map(al => `<div class="acc-alt-item">${escapeHtml(al)}</div>`).join('')}
+        </div>
+      `;
+    }
+
+    // Comments & Duration
+    let commentsHtml = '';
+    if (item.comments) {
+      commentsHtml = `
+        <div class="acc-comments">
+          <strong>💡 Comments &amp; Duration:</strong><br>
+          ${escapeHtml(item.comments).replace(/\n/g, '<br>')}
+        </div>
+      `;
+    }
+
+    // Verbatim uncut NAG text collapsible
+    let verbatimHtml = '';
+    if (item.verbatimText) {
+      verbatimHtml = `
+        <details class="acc-raw-details">
+          <summary>📄 View Full Verbatim NAG Text</summary>
+          <pre class="acc-raw-pre">${escapeHtml(item.verbatimText)}</pre>
+        </details>
+      `;
+    }
 
     card.innerHTML = `
       <div>
         <div class="acc-header">
-          <h3 class="acc-title">${item.name}</h3>
-          <span class="acc-category">${item.category}</span>
-        </div>
-        <p class="acc-organism"><strong>Pathogens:</strong> ${item.organism}</p>
-
-        <!-- Preferred First-Line Box -->
-        <div class="acc-preferred-box">
-          <div class="acc-pref-label">
-            <span>⭐ Preferred First-Line Choice</span>
-            <span class="aware-tag ${awareClass}" style="font-size:0.65rem;padding:2px 6px;">AWaRe: ${item.preferred.aware || 'Access'}</span>
+          <div>
+            <h3 class="acc-title">${escapeHtml(item.title)}</h3>
+            ${item.parentTopic && item.parentTopic !== item.title ? `<div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">📁 ${escapeHtml(item.parentTopic)}</div>` : ''}
           </div>
-          <div class="acc-pref-drug">${item.preferred.drug}</div>
-          <div class="acc-pref-dose">${item.preferred.doseText}</div>
+          <span class="acc-category">${item.sectionCode}: ${item.category}</span>
         </div>
 
-        <!-- Alternative Box -->
-        <div class="acc-alt-box">
-          <div class="acc-alt-label">Alternatives / Penicillin Allergy:</div>
-          ${altsHtml}
-        </div>
-
-        <div class="acc-footer-meta">
-          <span>Duration: <strong class="acc-duration">${item.duration}</strong></span>
-          <span>Route: <strong>${item.preferred.route}</strong></span>
-        </div>
-
-        <p class="acc-comments">ℹ️ ${item.comments}</p>
+        ${criteriaHtml}
+        ${organismHtml}
+        ${prefHtml}
+        ${altHtml}
+        ${allergyHtml}
+        ${commentsHtml}
+        ${verbatimHtml}
       </div>
 
       <button class="copy-adult-rx-btn" data-adult-id="${item.id}">
-        📋 Copy Prescription Note
+        📋 Copy Complete Clinical Note
       </button>
     `;
 
     card.querySelector('.copy-adult-rx-btn').addEventListener('click', () => {
-      const rxNote = `Rx (Adult): ${item.preferred.drug}
-Dose: ${item.preferred.doseText}
-Duration: ${item.duration}
-Diagnosis: ${item.name}
-Pathogens: ${item.organism}
-Guideline: MOH Malaysia NAG 2024 (faithx)`;
+      const rxLines = [
+        `=== MOH NAG 2024 Adult Guideline ===`,
+        `Condition: ${item.title}`,
+        `Section: ${item.sectionCode} - ${item.sectionName}`
+      ];
+      if (item.commonOrganisms) rxLines.push(`Pathogens:\n${item.commonOrganisms}`);
+      if (item.clinicalCriteria) rxLines.push(`Criteria:\n${item.clinicalCriteria}`);
+      if (item.preferred && item.preferred.length > 0) rxLines.push(`Preferred:\n${item.preferred.join('\n')}`);
+      if (item.alternative && item.alternative.length > 0) rxLines.push(`Alternative:\n${item.alternative.join('\n')}`);
+      if (item.allergy && item.allergy.length > 0) rxLines.push(`Allergy:\n${item.allergy.join('\n')}`);
+      if (item.comments) rxLines.push(`Comments:\n${item.comments}`);
+      rxLines.push(`Reference: MOH Malaysia NAG 2024 (faithx)`);
 
-      navigator.clipboard.writeText(rxNote).then(() => {
-        showToast(`Copied prescription for ${item.name}! 📋`);
+      navigator.clipboard.writeText(rxLines.join('\n\n')).then(() => {
+        showToast(`Copied complete clinical note for ${item.title}! 📋`);
       });
     });
 
     DOM.adultConditionsContainer.appendChild(card);
   });
+
+  if (displayLimit < list.length) {
+    const moreBtnWrap = document.createElement('div');
+    moreBtnWrap.style.gridColumn = '1 / -1';
+    moreBtnWrap.style.textAlign = 'center';
+    moreBtnWrap.style.padding = '1.5rem 0';
+
+    const moreBtn = document.createElement('button');
+    moreBtn.className = 'btn-secondary';
+    moreBtn.style.padding = '0.75rem 2rem';
+    moreBtn.style.fontWeight = '700';
+    moreBtn.textContent = `📥 Load All Remaining ${list.length - displayLimit} Conditions (${list.length} Total)`;
+    moreBtn.addEventListener('click', () => {
+      renderAdultConditions(list);
+    });
+
+    moreBtnWrap.appendChild(moreBtn);
+    DOM.adultConditionsContainer.appendChild(moreBtnWrap);
+  }
 }
 
 function recalculateCrcl() {
