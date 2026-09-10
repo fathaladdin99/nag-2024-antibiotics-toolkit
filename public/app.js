@@ -1,6 +1,6 @@
 /**
  * NAG 2024 Paediatric Antibiotics Toolkit & Calculator
- * Author / Creator: faithx
+ * Author / Creator: fathirosli
  * MOH Malaysia National Antimicrobial Guideline Engine
  */
 
@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initPaediatricToolkit();
   initPathways();
   initClinicalTools();
+  initDisclaimerAndFeedbackModals();
   checkLiveUpdates();
 });
 
@@ -144,6 +145,21 @@ function initDOMElements() {
   DOM.lastCheckedTime = document.getElementById('lastCheckedTime');
   DOM.changelogList = document.getElementById('changelogList');
   DOM.toastContainer = document.getElementById('toastContainer');
+
+  // Disclaimer & Feedback Modals DOM
+  DOM.disclaimerModal = document.getElementById('disclaimerModal');
+  DOM.disclaimerModalOverlay = document.getElementById('disclaimerModalOverlay');
+  DOM.disclaimerModalBtn = document.getElementById('disclaimerModalBtn');
+  DOM.openDisclaimerModalBtn = document.getElementById('openDisclaimerModalBtn');
+  DOM.closeDisclaimerModalBtn = document.getElementById('closeDisclaimerModalBtn');
+  DOM.acknowledgeDisclaimerBtn = document.getElementById('acknowledgeDisclaimerBtn');
+
+  DOM.feedbackModal = document.getElementById('feedbackModal');
+  DOM.feedbackModalOverlay = document.getElementById('feedbackModalOverlay');
+  DOM.feedbackNavBtn = document.getElementById('feedbackNavBtn');
+  DOM.footerFeedbackBtn = document.getElementById('footerFeedbackBtn');
+  DOM.closeFeedbackModalBtn = document.getElementById('closeFeedbackModalBtn');
+  DOM.copyFeedbackEmailBtn = document.getElementById('copyFeedbackEmailBtn');
 }
 
 /* ==========================================================================
@@ -651,7 +667,7 @@ Dose: ${doseMg} mg${volumePart} ${rule.route} ${freq} for ${dur}
 Diagnosis: ${cond}
 Patient: ${years}y ${months}m (${weight} kg)
 Guideline: NAG 2024 Malaysia (${AppState.activeAntibiotic.master.aware} Group)
-Created via NAG Paediatric Toolkit (faithx)`;
+Created via NAG 2024 Toolkit (fathirosli)`;
 
   navigator.clipboard.writeText(prescription).then(() => {
     showToast('Prescription copied to clipboard! 📋');
@@ -746,7 +762,7 @@ function copyNeonatePrescription() {
 Dose: ${dose} mg [${vol} mL] IV ${interval}
 Weight: ${wt} kg
 TDM: ${DOM.neonateTdmText.textContent}
-Reference: MOH NAG 2024 Section B6 (faithx)`;
+Reference: MOH NAG 2024 Section B6 (fathirosli)`;
 
   navigator.clipboard.writeText(note).then(() => {
     showToast('Neonatal prescription copied! 👶');
@@ -995,7 +1011,7 @@ function renderAdultConditions(list) {
       if (item.allergy && item.allergy.length > 0) rxLines.push(`Allergy:\n${item.allergy.join('\n')}`);
       if (item.comments) rxLines.push(`Comments:\n${item.comments}`);
       rxLines.push(`Official NAG: ${nagUrl}`);
-      rxLines.push(`Reference: MOH Malaysia NAG 2024 (faithx)`);
+      rxLines.push(`Reference: MOH Malaysia NAG 2024 (fathirosli)`);
 
       navigator.clipboard.writeText(rxLines.join('\n\n')).then(() => {
         showToast(`Copied note for ${item.title}! 📋`);
@@ -1220,7 +1236,7 @@ function renderPaediatricConditions(list) {
       if (item.allergy && item.allergy.length > 0) rxLines.push(`Allergy:\n${item.allergy.join('\n')}`);
       if (item.comments) rxLines.push(`Comments:\n${item.comments}`);
       rxLines.push(`Official NAG: ${nagUrl}`);
-      rxLines.push(`Reference: MOH Malaysia NAG 2024 (faithx)`);
+      rxLines.push(`Reference: MOH Malaysia NAG 2024 (fathirosli)`);
 
       navigator.clipboard.writeText(rxLines.join('\n\n')).then(() => {
         showToast(`Copied note for ${item.title}! 📋`);
@@ -1345,6 +1361,63 @@ function closePathwayModal() {
   if (!DOM.pathwayModal) return;
   DOM.pathwayModal.classList.add('hidden');
   document.body.style.overflow = '';
+}
+
+/* ==========================================================================
+   Disclaimer & Feedback Modals
+   ========================================================================== */
+function initDisclaimerAndFeedbackModals() {
+  const openDisclaimer = () => {
+    if (DOM.disclaimerModal) {
+      DOM.disclaimerModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+  };
+  const closeDisclaimer = () => {
+    if (DOM.disclaimerModal) {
+      DOM.disclaimerModal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+  };
+
+  if (DOM.disclaimerModalBtn) DOM.disclaimerModalBtn.addEventListener('click', openDisclaimer);
+  if (DOM.openDisclaimerModalBtn) DOM.openDisclaimerModalBtn.addEventListener('click', openDisclaimer);
+  if (DOM.closeDisclaimerModalBtn) DOM.closeDisclaimerModalBtn.addEventListener('click', closeDisclaimer);
+  if (DOM.disclaimerModalOverlay) DOM.disclaimerModalOverlay.addEventListener('click', closeDisclaimer);
+  if (DOM.acknowledgeDisclaimerBtn) DOM.acknowledgeDisclaimerBtn.addEventListener('click', closeDisclaimer);
+
+  const openFeedback = () => {
+    if (DOM.feedbackModal) {
+      DOM.feedbackModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+  };
+  const closeFeedback = () => {
+    if (DOM.feedbackModal) {
+      DOM.feedbackModal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+  };
+
+  if (DOM.feedbackNavBtn) DOM.feedbackNavBtn.addEventListener('click', openFeedback);
+  if (DOM.footerFeedbackBtn) DOM.footerFeedbackBtn.addEventListener('click', openFeedback);
+  if (DOM.closeFeedbackModalBtn) DOM.closeFeedbackModalBtn.addEventListener('click', closeFeedback);
+  if (DOM.feedbackModalOverlay) DOM.feedbackModalOverlay.addEventListener('click', closeFeedback);
+
+  if (DOM.copyFeedbackEmailBtn) {
+    DOM.copyFeedbackEmailBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText('fathirosli98@gmail.com').then(() => {
+        showToast('Email copied: fathirosli98@gmail.com ✉️');
+      });
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeDisclaimer();
+      closeFeedback();
+    }
+  });
 }
 
 function recalculateCrcl() {

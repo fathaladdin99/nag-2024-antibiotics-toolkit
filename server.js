@@ -212,7 +212,7 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
   console.log(`=======================================================`);
   console.log(`🩺 NAG 2024 Paediatric Antibiotic Toolkit & Calculator`);
-  console.log(`👤 Created by faithx`);
+  console.log(`👤 Created by fathirosli`);
   console.log(`🌐 Running on http://localhost:${PORT}`);
   console.log(`📡 Live NAG Updates Sync: http://localhost:${PORT}/api/updates/check`);
   console.log(`=======================================================`);

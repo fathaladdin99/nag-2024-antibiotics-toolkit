@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NAG 2024 ANTIBIOTICS TOOLKIT & CALCULATOR</title>
-  <meta name="description" content="NAG 2024 ANTIBIOTICS TOOLKIT & CALCULATOR - Complete Clinical Antibiotic Toolkit & Dosing Calculator based on MOH Malaysia NAG 2024. Created by faithx.">
+  <meta name="description" content="NAG 2024 ANTIBIOTICS TOOLKIT & CALCULATOR - Complete Clinical Antibiotic Toolkit & Dosing Calculator based on MOH Malaysia NAG 2024. Created by fathirosli for healthcare providers.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -24,7 +24,7 @@
         <div class="brand-text">
           <h1>NAG 2024 ANTIBIOTICS TOOLKIT &amp; CALCULATOR</h1>
           <p class="brand-subtitle">
-            Based on MOH Malaysia National Antimicrobial Guideline • <span class="creator-badge">Created by <strong>faithx</strong></span>
+            Based on MOH Malaysia NAG 2024 • <span class="creator-badge">Created by <strong>fathirosli</strong></span>
           </p>
         </div>
       </div>
@@ -35,6 +35,16 @@
           <span class="pulsing-dot"></span>
           <span id="syncChipText" class="sync-text">NAG Live: Sync Jan '26</span>
           <span class="refresh-mini-icon">↻</span>
+        </button>
+
+        <!-- Feedback Button -->
+        <button id="feedbackNavBtn" class="header-pill-btn" title="Send Feedback or Suggestions to fathirosli98@gmail.com">
+          <span>✉️ Feedback</span>
+        </button>
+
+        <!-- Disclaimer Button -->
+        <button id="disclaimerModalBtn" class="header-pill-btn disclaimer-pill-btn" title="View Medical & Legal Disclaimer">
+          <span>⚖️ Disclaimer</span>
         </button>
 
         <!-- Theme Toggle -->
@@ -782,16 +792,42 @@
   <footer class="app-footer">
     <div class="footer-container">
       <div class="footer-col">
-        <strong>NAG 2024 Paediatric Antibiotics Toolkit & Calculator</strong>
-        <p>Created by <strong>faithx</strong> for healthcare providers.</p>
-        <p class="footer-disclaimer">
-          Guideline source: Ministry of Health Malaysia (National Antimicrobial Guideline 2024 & Revisions). Intended to assist qualified medical practitioners. Clinical judgement must always prevail.
+        <strong>NAG 2024 ANTIBIOTICS TOOLKIT &amp; CALCULATOR</strong>
+        <p style="margin-top:0.35rem;">Created by <strong>fathirosli</strong> for healthcare providers.</p>
+        <p class="footer-disclaimer" style="margin-top:0.35rem;">
+          Guideline source: Ministry of Health Malaysia (National Antimicrobial Guideline 2024 &amp; Revisions). Intended to assist qualified medical practitioners. Clinical judgement must always prevail. (if u have ANY SUGGESTION, FEEDBACK, COMMENT can email to <a href="mailto:fathirosli98@gmail.com?subject=NAG%20Antibiotics%20Toolkit%20Feedback" style="color:var(--primary);font-weight:700;text-decoration:underline;">fathirosli98@gmail.com</a>)
         </p>
+
+        <!-- Strong Legal & Medical Disclaimer Box -->
+        <div class="legal-disclaimer-card" style="margin-top:1rem; padding:0.9rem 1.1rem; background:rgba(239, 68, 68, 0.07); border:1px solid rgba(239, 68, 68, 0.25); border-left:4px solid var(--danger); border-radius:var(--radius-md); font-size:0.75rem; color:var(--text-muted); line-height:1.5;">
+          <div style="font-weight:800; color:var(--danger); margin-bottom:0.4rem; display:flex; align-items:center; gap:0.4rem; font-size:0.82rem;">
+            <span>⚖️ LEGAL &amp; MEDICAL DISCLAIMER (NON-MOH AFFILIATION NOTICE)</span>
+          </div>
+          <p style="margin-bottom:0.45rem;">
+            <strong>1. Independent Project &amp; Non-Affiliation:</strong> This software is an independent clinical decision-support and educational tool created solely by <strong>fathirosli</strong> as a personal project. It is <strong>NOT an official publication of, NOT endorsed by, and NOT formally affiliated with the Ministry of Health Malaysia (MOH), the National Antimicrobial Secretariat, or the Pharmaceutical Services Programme</strong>. This tool does not represent the official Antimicrobial Secretariat.
+          </p>
+          <p style="margin-bottom:0.45rem;">
+            <strong>2. Clinical Judgement:</strong> Provided strictly for rapid bedside reference by registered medical practitioners and qualified healthcare providers. This tool does NOT replace formal medical diagnosis, physical examination, subspecialist consultation, or patient-specific microbiological culture &amp; susceptibility (C&amp;S) results. Clinical judgement must always prevail.
+          </p>
+          <p style="margin-bottom:0.45rem;">
+            <strong>3. Complete Limitation of Liability:</strong> While every effort has been made to transcribe official NAG 2024 protocols accurately, medical knowledge evolves and transcription or algorithmic errors may occur. The author (fathirosli) and contributors expressly disclaim all legal liability and responsibility for clinical decisions, dosage discrepancies, adverse drug events, or patient outcomes resulting from use of this application. Prescribing clinicians retain sole professional responsibility for all prescriptions.
+          </p>
+          <p>
+            <strong>4. Feedback &amp; Suggestions:</strong> Please send all suggestions, corrections, or feedback directly to developer fathirosli at <a href="mailto:fathirosli98@gmail.com?subject=NAG%20Toolkit%20Feedback" style="color:var(--primary);font-weight:700;text-decoration:underline;">fathirosli98@gmail.com</a>.
+          </p>
+        </div>
       </div>
+
       <div class="footer-links">
+        <div style="font-weight:700; font-size:0.85rem; color:var(--text-primary); margin-bottom:0.4rem;">Guideline Resources</div>
         <a href="https://sites.google.com/moh.gov.my/nag/contents?authuser=0&pli=1" target="_blank" rel="noopener">Official NAG Google Site ↗</a>
         <a href="https://sites.google.com/moh.gov.my/nag/information/whats-new" target="_blank" rel="noopener">MOH What's New Page ↗</a>
-        <a href="https://forms.gle/dLJmYjd8aV6eQ4Bm8" target="_blank" rel="noopener">MOH Feedback Form ↗</a>
+        <button id="footerFeedbackBtn" class="btn-secondary" style="font-size:0.8rem; padding:0.45rem 0.85rem; margin-top:0.5rem; text-align:left; cursor:pointer;">
+          ✉️ Send Feedback to fathirosli98@gmail.com
+        </button>
+        <button id="openDisclaimerModalBtn" class="btn-text-action" style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem; text-align:left; cursor:pointer;">
+          ⚖️ View Full Legal Disclaimer
+        </button>
       </div>
     </div>
   </footer>
@@ -813,6 +849,87 @@
       </div>
       <div class="pathway-modal-body">
         <img id="modalPathwayImg" src="" alt="Clinical Pathway Flowchart" class="pathway-lightbox-img">
+      </div>
+    </div>
+  </div>
+
+  <!-- Legal & Medical Disclaimer Modal -->
+  <div id="disclaimerModal" class="pathway-modal hidden">
+    <div class="pathway-modal-overlay" id="disclaimerModalOverlay"></div>
+    <div class="pathway-modal-dialog" style="max-width:680px;">
+      <div class="pathway-modal-header">
+        <div>
+          <h3 style="font-size:1.15rem;font-weight:800;color:var(--danger);display:flex;align-items:center;gap:0.5rem;">
+            <span>⚖️ Legal &amp; Medical Disclaimer</span>
+          </h3>
+          <span style="font-size:0.75rem;color:var(--text-muted);">Independent Project by fathirosli • Non-MOH Affiliation Notice</span>
+        </div>
+        <button id="closeDisclaimerModalBtn" class="icon-btn" title="Close" style="background:var(--bg-subtle);">✕</button>
+      </div>
+      <div class="pathway-modal-body" style="padding:1.5rem;font-size:0.85rem;color:var(--text-primary);line-height:1.6;display:flex;flex-direction:column;gap:1rem;">
+        <div style="background:rgba(239, 68, 68, 0.08);border-left:4px solid var(--danger);padding:0.85rem 1rem;border-radius:4px;">
+          <strong style="color:var(--danger);">CRITICAL NOTICE:</strong> This application is NOT an official platform of the Ministry of Health Malaysia (MOH) or the National Antimicrobial Secretariat.
+        </div>
+        <div>
+          <h4 style="font-size:0.95rem;font-weight:700;margin-bottom:0.25rem;">1. Independent Development</h4>
+          <p style="color:var(--text-muted);">This toolkit is a personal, independent open clinical decision-support tool created by <strong>fathirosli</strong> to assist qualified medical practitioners. It is not commissioned, sponsored, endorsed, or officially connected to the MOH Malaysia, the National Antimicrobial Committee, or any government authority.</p>
+        </div>
+        <div>
+          <h4 style="font-size:0.95rem;font-weight:700;margin-bottom:0.25rem;">2. Intended Audience &amp; Clinical Discretion</h4>
+          <p style="color:var(--text-muted);">The content is intended solely for licensed medical practitioners, clinical specialists, and pharmacists. Clinical judgement must always prevail. Prescribers must independently verify all dosing, drug interactions, renal adjustments, allergy histories, and local hospital pathogen patterns.</p>
+        </div>
+        <div>
+          <h4 style="font-size:0.95rem;font-weight:700;margin-bottom:0.25rem;">3. Total Exclusion of Liability</h4>
+          <p style="color:var(--text-muted);">The developer (fathirosli) expressly disclaims any and all legal liability for any adverse clinical events, prescription errors, morbidity, mortality, or financial damages resulting directly or indirectly from reliance on this software.</p>
+        </div>
+        <div>
+          <h4 style="font-size:0.95rem;font-weight:700;margin-bottom:0.25rem;">4. Feedback &amp; Inquiries</h4>
+          <p style="color:var(--text-muted);">For any inquiries, bug reports, or suggestions, please contact the developer directly: <a href="mailto:fathirosli98@gmail.com" style="color:var(--primary);font-weight:700;">fathirosli98@gmail.com</a>.</p>
+        </div>
+        <div style="text-align:right;margin-top:0.5rem;">
+          <button id="acknowledgeDisclaimerBtn" class="btn-primary" style="padding:0.6rem 1.5rem;">I Understand &amp; Agree</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Developer Feedback Modal -->
+  <div id="feedbackModal" class="pathway-modal hidden">
+    <div class="pathway-modal-overlay" id="feedbackModalOverlay"></div>
+    <div class="pathway-modal-dialog" style="max-width:560px;">
+      <div class="pathway-modal-header">
+        <div>
+          <h3 style="font-size:1.15rem;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:0.5rem;">
+            <span>💬 Send Feedback &amp; Suggestions</span>
+          </h3>
+          <span style="font-size:0.75rem;color:var(--text-muted);">Direct message to developer fathirosli</span>
+        </div>
+        <button id="closeFeedbackModalBtn" class="icon-btn" title="Close" style="background:var(--bg-subtle);">✕</button>
+      </div>
+      <div class="pathway-modal-body" style="padding:1.5rem;font-size:0.85rem;color:var(--text-primary);line-height:1.6;display:flex;flex-direction:column;gap:1.2rem;">
+        <p style="color:var(--text-muted);">
+          Have suggestions to improve this toolkit, noticed a dosage discrepancy, or want to propose a new clinical tool? Your feedback is greatly appreciated!
+        </p>
+
+        <div style="background:var(--surface);border:1px solid var(--border);padding:1rem;border-radius:var(--radius-md);text-align:center;">
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.35rem;">DEVELOPER EMAIL ADDRESS:</div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--primary);letter-spacing:0.5px;font-family:monospace;">
+            fathirosli98@gmail.com
+          </div>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+          <a href="mailto:fathirosli98@gmail.com?subject=NAG%20Antibiotics%20Toolkit%20-%20Suggestion%20%26%20Feedback&body=Hi%20fathirosli%2C%0A%0AMy%20feedback%20%2F%20suggestion%3A%0A%0A" class="btn-primary" style="flex:1;min-width:180px;text-align:center;text-decoration:none;padding:0.75rem 1rem;display:inline-flex;align-items:center;justify-content:center;gap:0.4rem;">
+            <span>✉️ Open Email Client</span>
+          </a>
+          <button id="copyFeedbackEmailBtn" class="btn-secondary" style="flex:1;min-width:150px;padding:0.75rem 1rem;">
+            📋 Copy Email Address
+          </button>
+        </div>
+
+        <p style="font-size:0.75rem;color:var(--text-muted);font-style:italic;margin-top:0.25rem;">
+          Note: This goes directly to independent developer fathirosli. This application is not affiliated with the MOH Antibiotic Secretariat.
+        </p>
       </div>
     </div>
   </div>
